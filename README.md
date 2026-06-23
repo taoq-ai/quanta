@@ -44,8 +44,9 @@ breach and stacks **three** vulnerability classes on the same four tools:
 | 3 | Excessive agency / confused deputy | LLM06 / LLM08 |
 
 ```bash
-uv run python scripts/exploit_demo.py     # same agent, two policies, opposite outcomes
-uv run pytest tests/test_exploit.py       # the lesson as assertions
+# Offline & dependency-free — works on a bare checkout, no install needed:
+PYTHONPATH=. python scripts/exploit_demo.py   # same agent, two policies, opposite outcomes
+uv run pytest tests/test_exploit.py           # the lesson as assertions
 ```
 
 A benign request — *"benchmark Q4 revenue and email me a summary"* — fetches a
