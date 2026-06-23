@@ -70,12 +70,12 @@ pip install -e '.[agentcore]'
 export AWS_REGION=us-east-1
 export AGENTCORE_EXECUTION_ROLE_ARN=<ExecutionRoleArn>
 aws sso login          # or aws configure — any creds that can assume nothing extra
-./scripts/deploy.sh
-./scripts/invoke_demo.sh
+python scripts/demo.py deploy
+python scripts/demo.py ask --cloud
 ```
 
-`scripts/deploy.sh` is intentionally identical in spirit to the CI workflow
-(install toolkit → build data → configure → launch → status).
+`python scripts/demo.py deploy` is intentionally identical in spirit to the CI
+workflow (install toolkit → build data → configure → launch → status).
 
 ## 3. Verify
 

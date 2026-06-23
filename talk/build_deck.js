@@ -178,12 +178,10 @@ imageSlide("…and notice it's well-built", "architecture.png", 1100, 660,
     { x: 0.7, y: 5.8, w: 11.9, h: 0.7, fontFace: HEAD, fontSize: 22, color: INK, bold: true });
   s.addNotes(
     "*** LIVE DEMO — Part 1: it's a real agent ***\n" +
-    "Run:  ./scripts/demo_live.sh            (auto cloud/local; PAUSE=1 to step)\n" +
-    "  or, manually, three real questions:\n" +
-    "  agentcore invoke '{\"prompt\": \"What was our revenue by country? Top 5.\"}'\n" +
-    "  agentcore invoke '{\"prompt\": \"How many orders per country?\"}'\n" +
-    "  agentcore invoke '{\"prompt\": \"Who are our top customers by orders?\"}'\n" +
-    "Offline fallback (no AWS):  QUANTA_STUB=1 python scripts/run_local.py \"revenue by country, top 5\"\n" +
+    "Run:  python scripts/demo.py --pause          (whole demo: ask -> scan -> exploit)\n" +
+    "  or just this part:  python scripts/demo.py ask              (offline stub)\n" +
+    "  on the deployed agent:  python scripts/demo.py ask --cloud  (real AgentCore)\n" +
+    "It asks three real questions (revenue by country top 5 / orders per country / top customers).\n" +
     "Real numbers from UCI Online Retail II. Then say: 'Real agent, real data, genuinely useful. Now — is it safe?'");
 }
 
@@ -249,8 +247,8 @@ imageSlide("…and the composition is still critical", "architecture-overlay.png
 imageSlide("This isn't a drawing — it's the scan", "ziran_graph.gif", 900, 790,
   "The real ZIRAN interactive graph. One critical finding: search_database → send_email_report, data_exfiltration.",
   "*** LIVE DEMO — find the composition ***\n" +
-  "Run:  QUANTA_STUB=1 python scripts/scan_quanta.py --out reports   (offline, in-process)\n" +
-  "Then: open reports/*_report.html   — pan the graph, click the red node.\n" +
+  "Run:  python scripts/demo.py scan   (installs ZIRAN if needed, then opens the report)\n" +
+  "It scans in-process and opens reports/*_report.html — pan the graph, click the red node.\n" +
   "(This slide embeds the real interactive graph as a looping GIF — it plays in Presenter/slideshow, and is the fallback if the live open stalls.)\n" +
   "One critical finding: search_database → send_email_report, data_exfiltration. Say: 'I didn't tell ZIRAN this was dangerous — that verdict is from its built-in patterns. I gave it a graph; it gave me the exit. But a finding on a slide is easy to wave away — so let me show you the exit actually being used.'");
 
@@ -261,7 +259,7 @@ imageSlide("This isn't a drawing — it's the scan", "ziran_graph.gif", 900, 790
 imageSlide("Theoretical? Watch it happen — live, offline", "exploit_vulnerable.png", 1287, 368,
   "Benign request + a poisoned reference → 16,741 bytes of customer PII to an attacker mailbox on the ALLOWLISTED domain. Every per-tool control held.",
   "*** LIVE DEMO — the breach ***\n" +
-  "Run:  python scripts/exploit_demo.py            (offline, deterministic; --vulnerable-only for just this)\n" +
+  "Run:  python scripts/demo.py exploit            (offline, deterministic — prints both runs)\n" +
   "Walk the table: a benign request → fetch_reference returns an allowlisted page whose CONTENT carries a hidden instruction (indirect prompt injection, LLM01). The agent obeys → search_database reads 900 customer-level rows → watch the taint go red: PRIVATE+UNTRUSTED, the lethal trifecta in one run → send_email_report ships 16,741 bytes of PII to ops-archive@reports.acme-analytics.example. That mailbox is on the ALLOWLISTED domain — the domain check PASSED. Model-chosen recipient = excessive agency / confused deputy (LLM06). Say slowly: 'No control was bypassed. The data left through fully authorised actions.'");
 
 // 21 — three vulnerabilities, one agent
@@ -296,7 +294,7 @@ imageSlide("What's behind the scan", "credibility.png", 1100, 560, null,
 imageSlide("Break the graph: the same attack, blocked", "exploit_hardened.png", 1287, 343,
   "One injected security policy. Injection refused as data; model-chosen recipient denied; the analyst's summary still goes out. Same agent, same payload.",
   "*** LIVE DEMO — the fix ***\n" +
-  "Same script printed both runs — scroll to the second (or: python scripts/exploit_demo.py --hardened-only).\n" +
+  "`python scripts/demo.py exploit` already printed both runs — scroll to the second.\n" +
   "Same agent, same payload, opposite outcome: the injected instruction is REFUSED as data (LLM01); the model-chosen recipient is DENIED by recipient-binding (LLM06); the trifecta gate stops a private+untrusted run reaching an external sink. Crucially the analyst's legitimate summary STILL goes out. Say: 'The fix didn't break the product. We broke the path, not the agent.'");
 
 // 24 — what actually breaks the path
@@ -335,7 +333,7 @@ imageSlide("Break the graph: the same attack, blocked", "exploit_hardened.png", 
   const s = p.addSlide();
   contentHead(s, "Try it yourself");
   s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 1.7, w: 5.85, h: 2.3, fill: { color: INDIGOL }, line: { color: INDIGO, width: 1 }, rectRadius: 0.1 });
-  s.addText([{ text: "Quanta\n", options: { bold: true, color: INDIGO, fontSize: 20, fontFace: HEAD } }, { text: "github.com/taoq-ai/quanta\n\n", options: { color: SLATE, fontSize: 15, fontFace: "Courier New" } }, { text: "The demo agent — defensible architecture, one composition finding. Run scripts/exploit_demo.py yourself.", options: { color: SLATE, fontSize: 15 } }], { x: 1.05, y: 1.95, w: 5.2, h: 1.8, valign: "top", fontFace: BODY, lineSpacingMultiple: 1.1 });
+  s.addText([{ text: "Quanta\n", options: { bold: true, color: INDIGO, fontSize: 20, fontFace: HEAD } }, { text: "github.com/taoq-ai/quanta\n\n", options: { color: SLATE, fontSize: 15, fontFace: "Courier New" } }, { text: "The demo agent — defensible architecture, one composition finding. Run python scripts/demo.py yourself.", options: { color: SLATE, fontSize: 15 } }], { x: 1.05, y: 1.95, w: 5.2, h: 1.8, valign: "top", fontFace: BODY, lineSpacingMultiple: 1.1 });
   s.addShape(p.ShapeType.roundRect, { x: 6.78, y: 1.7, w: 5.85, h: 2.3, fill: { color: "ECFDF5" }, line: { color: GREEN, width: 1 }, rectRadius: 0.1 });
   s.addText([{ text: "ZIRAN\n", options: { bold: true, color: GREEN, fontSize: 20, fontFace: HEAD } }, { text: "github.com/taoq-ai/ziran\n\n", options: { color: SLATE, fontSize: 15, fontFace: "Courier New" } }, { text: "The finder — composition analysis for AI agents.", options: { color: SLATE, fontSize: 15 } }], { x: 7.13, y: 1.95, w: 5.2, h: 1.8, valign: "top", fontFace: BODY, lineSpacingMultiple: 1.1 });
   s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 4.3, w: 11.93, h: 1.5, fill: { color: REDL }, line: { color: RED, width: 1.2 }, rectRadius: 0.1 });

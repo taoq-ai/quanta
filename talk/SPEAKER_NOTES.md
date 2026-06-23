@@ -6,7 +6,7 @@
 **One sentence:** *Individually-safe tools compose into an exfiltration path; the vulnerability lives in the graph, and you can find it before an attacker does.*
 
 > **Full per-slide notes are embedded in the deck** (`talk/quanta-talk.pptx` → Presenter View, or View ▸ Notes). This file is the at-a-glance arc + the live-demo runbook.
-> Live drivers: `scripts/demo_live.sh` (one command for the whole demo), `scripts/scan_quanta.py` (the scan), `scripts/exploit_demo.py` (breach + fix).
+> Live driver (one Python script, no shell): `python scripts/demo.py` — subcommands `ask`, `scan`, `exploit`, `deploy`.
 > Frozen fallbacks in `talk/assets/`: `ziran_graph.gif`, `ziran_report_dashboard.png`, `exploit_vulnerable.png`, `exploit_hardened.png`.
 
 ---
@@ -46,47 +46,42 @@
 
 ## Live demo runbook (rehearse this)
 
-The whole demo is **one script** — or run the pieces by hand. All of it works
-**offline** (the scan and exploit run in-process); only the slide-12 real-agent
-invoke uses AWS, and even that has an offline fallback.
+The whole demo is **one Python script** — `python scripts/demo.py` — or run the
+pieces by hand. `ask` and `exploit` work offline on a bare checkout; `scan`
+needs ZIRAN and installs it for you. Only `ask --cloud` uses AWS.
 
 ### Pre-flight (before you walk on)
-1. `pip install -e '.[data,dev]'` then `quanta-load-data` (real UCI data; `--synthetic` if no network).
-2. If demoing the deployed agent: `agentcore launch` done earlier; confirm `./scripts/invoke_demo.sh` answers.
-3. Warm the scan once: `QUANTA_STUB=1 PYTHONPATH=. python scripts/scan_quanta.py --out reports` and open the HTML once.
+1. `quanta-load-data` (real UCI data; `--synthetic` if no network).
+2. If demoing the deployed agent: `python scripts/demo.py deploy` done earlier; confirm `python scripts/demo.py ask --cloud` answers.
+3. Warm the scan once: `python scripts/demo.py scan` (installs ZIRAN, opens the HTML).
 4. Open background tabs: `reports/*_report.html`, and the frozen `talk/assets/ziran_graph.gif`.
 
 ### One-command path
 ```bash
-PAUSE=1 ./scripts/demo_live.sh      # steps through: 3 real questions → live scan → exploit → fix
-# MODE=cloud forces the deployed AgentCore agent; MODE=local forces the offline stub.
+python scripts/demo.py --pause      # steps through: 3 real questions → live scan → exploit → fix
+# add --cloud to use the deployed AgentCore agent for the questions.
 ```
 
 ### By hand (mapped to slides)
 - **Slide 12 — it's a real agent:**
   ```bash
-  agentcore invoke '{"prompt": "What was our revenue by country? Give me the top 5."}'
-  agentcore invoke '{"prompt": "How many orders per country?"}'
-  agentcore invoke '{"prompt": "Who are our top customers by orders?"}'
-  # offline fallback:
-  QUANTA_STUB=1 PYTHONPATH=. python scripts/run_local.py "revenue by country, top 5"
+  python scripts/demo.py ask              # offline stub (3 questions)
+  python scripts/demo.py ask --cloud      # the deployed AgentCore agent
   ```
 - **Slide 18 — find the composition (live ZIRAN):**
   ```bash
-  QUANTA_STUB=1 PYTHONPATH=. python scripts/scan_quanta.py --out reports
-  open reports/*_report.html      # pan the graph, click the red node
+  python scripts/demo.py scan             # installs ZIRAN if needed, scans, opens the report
   ```
   The slide embeds the real graph as a looping GIF — it plays in Presenter View and is the fallback if the live open stalls.
 - **Slides 20 + 23 — the breach, then the fix:**
   ```bash
-  python scripts/exploit_demo.py            # prints both runs (vulnerable, then hardened)
-  # or split: --vulnerable-only  /  --hardened-only
+  python scripts/demo.py exploit          # prints both runs (vulnerable, then hardened)
   ```
 
 ### If wifi/AWS fails
-Skip the slide-12 live invoke; narrate over the output. The scan **and** the
-exploit run in-process and offline, so they never need the network. The frozen
-GIF/PNGs in `talk/assets/` are the ultimate safety net.
+Skip the slide-12 `--cloud` invoke; use `python scripts/demo.py ask` (offline).
+The scan **and** the exploit run in-process and offline, so they never need the
+network. The frozen GIF/PNGs in `talk/assets/` are the ultimate safety net.
 
 ---
 
