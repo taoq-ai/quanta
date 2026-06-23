@@ -167,15 +167,9 @@ class QuantaBootstrapStack(cdk.Stack):
         deploy_role.add_to_policy(
             iam.PolicyStatement(
                 sid="CodeBuildSourceBucket",
-                actions=[
-                    "s3:CreateBucket",
-                    "s3:GetObject",
-                    "s3:PutObject",
-                    "s3:ListBucket",
-                    "s3:GetBucketLocation",
-                    "s3:PutBucketPolicy",
-                    "s3:PutEncryptionConfiguration",
-                ],
+                # Scoped to the toolkit's own source bucket; broad actions there
+                # cover create/encrypt/lifecycle/tag/version the toolkit sets.
+                actions=["s3:*"],
                 resources=[
                     "arn:aws:s3:::bedrock-agentcore-codebuild-sources-*",
                     "arn:aws:s3:::bedrock-agentcore-codebuild-sources-*/*",
@@ -192,6 +186,19 @@ class QuantaBootstrapStack(cdk.Stack):
                     "logs:GetLogEvents",
                     "logs:DescribeLogGroups",
                     "logs:DescribeLogStreams",
+                    # Vended-log delivery for AgentCore Memory observability.
+                    "logs:PutDeliverySource",
+                    "logs:PutDeliveryDestination",
+                    "logs:PutDeliveryDestinationPolicy",
+                    "logs:CreateDelivery",
+                    "logs:GetDelivery",
+                    "logs:GetDeliverySource",
+                    "logs:GetDeliveryDestination",
+                    "logs:DescribeDeliveries",
+                    "logs:DescribeDeliverySources",
+                    "logs:DescribeDeliveryDestinations",
+                    "logs:PutResourcePolicy",
+                    "logs:DescribeResourcePolicies",
                 ],
                 resources=["*"],
             )
