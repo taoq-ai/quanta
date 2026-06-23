@@ -32,6 +32,34 @@ search_database  ──▶  send_email_report      = CRITICAL data exfiltration
                                                  from fetch_reference)
 ```
 
+## See it exploited (and fixed) — no AWS
+
+The composition is the *precondition*. One runnable attack turns it into a live
+breach and stacks **three** vulnerability classes on the same four tools:
+
+| # | Class | OWASP |
+|---|---|---|
+| 1 | Tool-composition data exfiltration | — (structural; ZIRAN finds it statically) |
+| 2 | Indirect prompt injection | LLM01 |
+| 3 | Excessive agency / confused deputy | LLM06 / LLM08 |
+
+```bash
+uv run python scripts/exploit_demo.py     # same agent, two policies, opposite outcomes
+uv run pytest tests/test_exploit.py       # the lesson as assertions
+```
+
+A benign request — *"benchmark Q4 revenue and email me a summary"* — fetches a
+reference whose content carries a hidden instruction. The **vulnerable** agent
+follows it, reads ~900 customer-level rows, and emails ~16 KB of PII to an
+attacker mailbox **on the allowlisted domain** (the domain check passes). The
+**hardened** agent refuses the injected instruction, blocks the model-chosen
+recipient, and still delivers the analyst's summary. Every per-tool control held
+in both runs — only the design-time composition policy changed.
+
+Walkthrough: [`docs/exploitation.md`](docs/exploitation.md) ·
+Fixes: [`docs/remediation.md`](docs/remediation.md) ·
+Threat model: [`docs/threat-model.md`](docs/threat-model.md)
+
 ## Architecture
 
 Hexagonal (ports & adapters), kept deliberately small — see
@@ -61,6 +89,9 @@ QUANTA_STUB=1 PYTHONPATH=. python scripts/run_local.py
 # 3. Scan it with ZIRAN — see the composition finding + interactive report
 QUANTA_STUB=1 PYTHONPATH=. python scripts/scan_quanta.py --out reports
 open reports/*.html
+
+# 4. Watch the composition get exploited, then blocked by the hardened policy
+python scripts/exploit_demo.py
 ```
 
 ## Deploy for real (Amazon Bedrock AgentCore)

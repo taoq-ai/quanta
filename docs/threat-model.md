@@ -29,6 +29,21 @@ on all four.
 all present in one agent. The attacker does not need to defeat any single
 control. They need the *path*, and the path is authorised end-to-end.
 
+## Three vulnerability classes, one agent
+
+The composition is the *precondition*. Exploiting it pulls in two more classes
+that live on the same four tools. All three are demonstrated by one runnable
+attack (`scripts/exploit_demo.py`).
+
+| # | Class | OWASP | Where it lives | Caught by |
+|---|---|---|---|---|
+| 1 | **Tool-composition data exfiltration** | — (structural) | `search_database → send_email_report` | ZIRAN `ToolChainAnalyzer` (static, pre-attack) |
+| 2 | **Indirect prompt injection** | LLM01 | untrusted content from `fetch_reference` is followed as an instruction | the exploit / runtime policy |
+| 3 | **Excessive agency / confused deputy** | LLM06 / LLM08 | `send_email_report` trusts a *model-chosen* recipient | the exploit / runtime policy |
+
+Full walkthrough with the payload and the bytes that leave:
+[`exploitation.md`](exploitation.md).
+
 ## What ZIRAN reports
 
 Running `scripts/scan_quanta.py` builds the capability graph and runs ZIRAN's
@@ -39,19 +54,24 @@ anything we label):
 |---|---|---|
 | 🔴 critical | `data_exfiltration` | `search_database → send_email_report` |
 
+ZIRAN finds class #1 **statically, before anyone is attacked** — the structural
+precondition. Classes #2 and #3 are the trigger and the missing control that
+turn that precondition into a live breach.
+
 ## Mitigations (design-time, not per-tool)
 
-The fix is not "remove a tool" — each is justified. It is to break the *graph*:
+The fix is not "remove a tool" — each is justified. It is to break the *graph*.
+All three controls below are implemented and tested in
+[`quanta/security/`](../quanta/security/policy.py); full code +
+rationale in [`remediation.md`](remediation.md):
 
-- **Taint / trust tracking:** mark data read via `search_database` and content
-  from `fetch_reference` as tainted; forbid tainted data reaching
-  `send_email_report` without human review.
-- **Trifecta gate:** disallow any single agent run from holding all three of
-  {private-data read, untrusted-content ingest, external send}. Split into
-  separate, differently-privileged agents.
-- **Recipient binding:** bind `send_email_report` recipients to the
-  authenticated requester, not to a model-chosen address (even an allowlisted
-  one).
+- **No instructions from data** — content from `fetch_reference` is data, never
+  commands (kills LLM01).
+- **Recipient binding** — `send_email_report` may only target the authenticated
+  requester, not a model-chosen address, even an allowlisted one (kills LLM06).
+- **Trifecta gate (taint):** a run holding both private data and untrusted
+  content may not reach an external sink unattended. Aggregates are not marked
+  private, so the legitimate task is unaffected.
 - **Continuously re-scan:** treat the composition graph as a reviewable artifact
   in CI (`ziran ci`) so a newly-added tool that completes a trifecta fails the
   build.
