@@ -82,7 +82,9 @@ jobs:
             --non-interactive
 
       - name: Launch (CodeBuild image build + deploy)
-        run: agentcore launch
+        # --auto-update-on-conflict so repeat deploys UPDATE the existing runtime
+        # instead of failing with "Agent already exists".
+        run: agentcore launch --auto-update-on-conflict
 
       - name: Status
         run: agentcore status

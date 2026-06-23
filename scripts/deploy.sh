@@ -43,7 +43,7 @@ fi
 agentcore configure "${configure_args[@]}"
 
 echo "==> Launching to AgentCore Runtime in ${AWS_REGION} (CodeBuild build)"
-agentcore launch
+agentcore launch --auto-update-on-conflict
 
 echo "==> Status"
 agentcore status || true
