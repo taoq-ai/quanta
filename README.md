@@ -63,8 +63,9 @@ Threat model: [`docs/threat-model.md`](docs/threat-model.md)
 ## Architecture
 
 Hexagonal (ports & adapters), kept deliberately small — see
-[`docs/architecture.md`](docs/architecture.md) and the annotated diagram
-[`docs/architecture.svg`](docs/architecture.svg).
+[`docs/architecture.md`](docs/architecture.md), the annotated control diagram
+[`docs/architecture.svg`](docs/architecture.svg), and the C4 container view
+[`docs/c4-container.svg`](docs/c4-container.svg).
 
 ```
 quanta/

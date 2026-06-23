@@ -20,6 +20,7 @@ ASSETS.mkdir(parents=True, exist_ok=True)
 SVGS = [
     (ROOT / "docs" / "architecture.svg", "architecture.png", 1100, 660),
     (ROOT / "docs" / "architecture-overlay.svg", "architecture-overlay.png", 1100, 660),
+    (ROOT / "docs" / "c4-container.svg", "c4-container.png", 1180, 800),
     (ASSETS / "graph-evolution.svg", "graph-evolution.png", 1200, 460),
     (ASSETS / "lethal-trifecta.svg", "lethal-trifecta.png", 1000, 620),
     (ASSETS / "review-blindness.svg", "review-blindness.png", 1100, 560),

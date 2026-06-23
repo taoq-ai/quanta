@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 800" font-family="-apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#475569"/>
+    </marker>
+    <style>
+      .h{font-size:25px;font-weight:700;fill:#0f172a}
+      .sub{font-size:14px;fill:#64748b}
+      .pt{font-size:18px;font-weight:700;fill:#ffffff;text-anchor:middle}
+      .ty{font-size:11px;fill:#dbeafe;text-anchor:middle}
+      .ds{font-size:12px;fill:#eaf1fb;text-anchor:middle}
+      .conn{fill:none;stroke:#475569;stroke-width:2}
+      .rel{font-size:11.5px;fill:#475569}
+      .relbg{fill:#ffffff;fill-opacity:0.9}
+      .bnd{fill:none;stroke:#94a3b8;stroke-width:2;stroke-dasharray:7 6}
+      .bndl{font-size:13px;font-weight:700;fill:#475569}
+      .tag{font-size:11px;font-weight:700;text-anchor:middle}
+      .note{font-size:11px;fill:#94a3b8;font-style:italic;text-anchor:middle}
+    </style>
+  </defs>
+  <rect width="1180" height="800" fill="#ffffff"/>
+  <text x="590" y="44" text-anchor="middle" class="h">Quanta — solution design (C4 container view)</text>
+  <text x="590" y="68" text-anchor="middle" class="sub">Every container ships a real control. The composition risk is not in any box — it is the path across them.</text>
+
+  <!-- system boundary (50px padding around the tool row, centred) -->
+  <rect class="bnd" x="90" y="205" width="1000" height="420" rx="14"/>
+  <text x="110" y="231" class="bndl">Quanta — Amazon Bedrock AgentCore Runtime  [Software System]</text>
+
+  <!-- Person (centred above the agent loop) -->
+  <rect x="480" y="92" width="220" height="78" rx="10" fill="#08427b"/>
+  <text x="590" y="124" class="pt">Data Analyst</text>
+  <text x="590" y="143" class="ty">[Person]</text>
+  <text x="590" y="161" class="ds">asks analytics questions</text>
+
+  <!-- External managed model -->
+  <rect x="900" y="92" width="220" height="78" rx="10" fill="#708090"/>
+  <text x="1010" y="124" class="pt">Amazon Bedrock</text>
+  <text x="1010" y="143" class="ty">[External · managed LLM]</text>
+  <text x="1010" y="161" class="ds">Claude — reasoning</text>
+
+  <!-- Agent loop (centred) -->
+  <rect x="455" y="258" width="270" height="92" rx="10" fill="#1168bd"/>
+  <text x="590" y="298" class="pt">Agent loop</text>
+  <text x="590" y="318" class="ty">[Container · Strands]</text>
+  <text x="590" y="337" class="ds">plans &amp; sequences the four tools</text>
+
+  <!-- person -> agent loop (straight) -->
+  <line x1="590" y1="170" x2="590" y2="256" class="conn" marker-end="url(#arr)"/>
+  <rect class="relbg" x="602" y="204" width="96" height="17"/>
+  <text x="606" y="217" class="rel">prompt (HTTPS)</text>
+
+  <!-- agent loop -> bedrock (one clean elbow) -->
+  <polyline points="710,258 710,131 898,131" class="conn" marker-end="url(#arr)"/>
+  <rect class="relbg" x="722" y="123" width="120" height="17"/>
+  <text x="726" y="136" class="rel">tool-use reasoning</text>
+
+  <!-- comb bus: agent loop -> four tools (all straight) -->
+  <line x1="590" y1="350" x2="590" y2="410" class="conn"/>
+  <line x1="230" y1="410" x2="950" y2="410" class="conn"/>
+  <line x1="230" y1="410" x2="230" y2="448" class="conn" marker-end="url(#arr)"/>
+  <line x1="470" y1="410" x2="470" y2="448" class="conn" marker-end="url(#arr)"/>
+  <line x1="710" y1="410" x2="710" y2="448" class="conn" marker-end="url(#arr)"/>
+  <line x1="950" y1="410" x2="950" y2="448" class="conn" marker-end="url(#arr)"/>
+  <text x="612" y="385" class="rel" fill="#94a3b8">calls tools in sequence</text>
+
+  <!-- tool containers (centres 230 / 470 / 710 / 950) -->
+  <g>
+    <rect x="140" y="450" width="180" height="150" rx="10" fill="#1f7ad4"/>
+    <text x="230" y="498" class="pt" font-size="15.5">search_database</text>
+    <text x="230" y="518" class="ty">[Container]</text>
+    <text x="230" y="544" class="ds">read-only replica</text>
+    <text x="230" y="562" class="ds">parameterised (no SQL)</text>
+  </g>
+  <g>
+    <rect x="380" y="450" width="180" height="150" rx="10" fill="#1f7ad4"/>
+    <text x="470" y="498" class="pt" font-size="16">run_analysis</text>
+    <text x="470" y="518" class="ty">[Container]</text>
+    <text x="470" y="544" class="ds">sandbox · no network</text>
+    <text x="470" y="562" class="ds">no imports · timed</text>
+  </g>
+  <g>
+    <rect x="620" y="450" width="180" height="150" rx="10" fill="#1f7ad4"/>
+    <text x="710" y="498" class="pt" font-size="15.5">fetch_reference</text>
+    <text x="710" y="518" class="ty">[Container]</text>
+    <text x="710" y="544" class="ds">egress allowlist</text>
+    <text x="710" y="562" class="ds">(destination only)</text>
+  </g>
+  <g>
+    <rect x="860" y="450" width="180" height="150" rx="10" fill="#1f7ad4"/>
+    <text x="950" y="496" class="pt" font-size="14">send_email_report</text>
+    <text x="950" y="516" class="ty">[Container]</text>
+    <text x="950" y="542" class="ds">domain allowlist</text>
+    <text x="950" y="560" class="ds">audit · dry-run</text>
+  </g>
+
+  <!-- tool -> external system (straight drops) -->
+  <line x1="230" y1="600" x2="230" y2="646" class="conn" marker-end="url(#arr)"/>
+  <line x1="710" y1="600" x2="710" y2="646" class="conn" marker-end="url(#arr)"/>
+  <line x1="950" y1="600" x2="950" y2="646" class="conn" marker-end="url(#arr)"/>
+  <text x="470" y="668" class="note">(in-process sandbox — no external system)</text>
+
+  <!-- trust tags, centred on each drop -->
+  <rect x="178" y="612" width="104" height="22" rx="11" fill="#dbeafe"/>
+  <text x="230" y="627" class="tag" fill="#1d4ed8">PRIVATE data</text>
+  <rect x="648" y="612" width="124" height="22" rx="11" fill="#fef3c7"/>
+  <text x="710" y="627" class="tag" fill="#b45309">UNTRUSTED in</text>
+  <rect x="888" y="612" width="124" height="22" rx="11" fill="#dcfce7"/>
+  <text x="950" y="627" class="tag" fill="#047857">EXTERNAL out</text>
+
+  <!-- external systems / data stores -->
+  <g>
+    <rect x="140" y="646" width="180" height="80" rx="10" fill="#438dd5"/>
+    <text x="230" y="681" class="pt" font-size="15">Analytics replica</text>
+    <text x="230" y="700" class="ty">[Data store · read-only]</text>
+    <text x="230" y="718" class="ds">UCI Online Retail II</text>
+  </g>
+  <g>
+    <rect x="620" y="646" width="180" height="80" rx="10" fill="#708090"/>
+    <text x="710" y="681" class="pt" font-size="15">Reference sources</text>
+    <text x="710" y="700" class="ty">[External · allowlisted]</text>
+    <text x="710" y="718" class="ds">content is untrusted</text>
+  </g>
+  <g>
+    <rect x="860" y="646" width="180" height="80" rx="10" fill="#708090"/>
+    <text x="950" y="681" class="pt" font-size="16">Mail relay</text>
+    <text x="950" y="700" class="ty">[External · dry-run]</text>
+    <text x="950" y="718" class="ds">allowlisted domain</text>
+  </g>
+
+  <text x="590" y="772" text-anchor="middle" class="sub">Three of these containers form the lethal trifecta — private read · untrusted ingest · external send — reachable in one agent run.</text>
+</svg>

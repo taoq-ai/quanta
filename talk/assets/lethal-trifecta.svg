@@ -1,36 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" font-family="-apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 660" font-family="-apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
   <defs>
     <style>
       .h{font-size:26px;font-weight:700;fill:#0f172a}
       .sub{font-size:15px;fill:#64748b}
-      .ring{fill-opacity:0.18;stroke-width:2.5}
-      .lbl{font-size:17px;font-weight:700;text-anchor:middle}
-      .tool{font-size:13px;font-weight:600;text-anchor:middle;fill:#334155}
-      .center{font-size:15px;font-weight:700;fill:#b91c1c;text-anchor:middle}
+      .ring{fill-opacity:0.16;stroke-width:2.5}
+      .lbl{font-size:18px;font-weight:700;text-anchor:middle;paint-order:stroke;stroke:#ffffff;stroke-width:5px;stroke-linejoin:round}
+      .tool{font-size:13px;font-weight:600;text-anchor:middle;fill:#334155;paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round}
+      .center{font-size:17px;font-weight:800;fill:#b91c1c;text-anchor:middle;paint-order:stroke;stroke:#ffffff;stroke-width:5px;stroke-linejoin:round}
     </style>
   </defs>
-  <rect width="1000" height="620" fill="#ffffff"/>
-  <text x="500" y="52" text-anchor="middle" class="h">The lethal trifecta — in one agent</text>
-  <text x="500" y="80" text-anchor="middle" class="sub">Quanta has every control. It also has all three legs.</text>
+  <rect width="1000" height="660" fill="#ffffff"/>
+  <text x="500" y="46" text-anchor="middle" class="h">The lethal trifecta — in one agent</text>
+  <text x="500" y="74" text-anchor="middle" class="sub">Quanta has every control. It also has all three legs.</text>
 
   <!-- three circles -->
-  <circle cx="400" cy="270" r="170" class="ring" fill="#3b82f6" stroke="#2563eb"/>
-  <circle cx="600" cy="270" r="170" class="ring" fill="#f59e0b" stroke="#d97706"/>
-  <circle cx="500" cy="430" r="170" class="ring" fill="#10b981" stroke="#059669"/>
+  <circle cx="390" cy="300" r="165" class="ring" fill="#3b82f6" stroke="#2563eb"/>
+  <circle cx="610" cy="300" r="165" class="ring" fill="#f59e0b" stroke="#d97706"/>
+  <circle cx="500" cy="455" r="165" class="ring" fill="#10b981" stroke="#059669"/>
 
-  <!-- labels -->
-  <text x="300" y="210" class="lbl" fill="#1d4ed8">Private data</text>
-  <text x="300" y="232" class="tool">search_database</text>
+  <!-- leg labels, each in its single-circle region -->
+  <text x="292" y="290" class="lbl" fill="#1d4ed8">Private data</text>
+  <text x="292" y="313" class="tool">search_database</text>
 
-  <text x="700" y="210" class="lbl" fill="#b45309">Untrusted content</text>
-  <text x="700" y="232" class="tool">fetch_reference</text>
+  <text x="708" y="290" class="lbl" fill="#b45309">Untrusted content</text>
+  <text x="708" y="313" class="tool">fetch_reference</text>
 
-  <text x="500" y="540" class="lbl" fill="#047857">External comms</text>
-  <text x="500" y="562" class="tool">send_email_report</text>
+  <text x="500" y="560" class="lbl" fill="#047857">External comms</text>
+  <text x="500" y="583" class="tool">send_email_report</text>
 
-  <!-- center intersection -->
-  <text x="500" y="318" class="center">data</text>
-  <text x="500" y="338" class="center">exfiltration</text>
+  <!-- triple-intersection: the exfiltration path -->
+  <text x="500" y="350" class="center">data</text>
+  <text x="500" y="372" class="center">exfiltration</text>
 
-  <text x="500" y="605" text-anchor="middle" class="sub">Each control is real. The path through all three is authorised end-to-end.</text>
+  <text x="500" y="638" text-anchor="middle" class="sub">Each control is real. The path through all three is authorised end-to-end.</text>
 </svg>
