@@ -39,7 +39,9 @@ class ReadOnlyMetricsRepository:
         uri = f"file:{self._db_path}?mode=ro"
         return sqlite3.connect(uri, uri=True)
 
-    def query(self, metric: str, *, group_by: str | None = None, limit: int | None = None) -> QueryResult:
+    def query(
+        self, metric: str, *, group_by: str | None = None, limit: int | None = None
+    ) -> QueryResult:
         if metric not in _METRICS:
             raise ValueError(f"unknown metric {metric!r}; choose from {sorted(_METRICS)}")
         group = group_by if group_by in _GROUP_COLUMNS else "country"

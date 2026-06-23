@@ -28,21 +28,30 @@ TOOL_CATALOG: tuple[ToolSpec, ...] = (
     ToolSpec(
         id="search_database",
         name="Search Database",
-        description="Search the read-only analytics replica for business metrics (revenue, orders, customers) by country, month, product or customer.",
+        description=(
+            "Search the read-only analytics replica for business metrics "
+            "(revenue, orders, customers) by country, month, product or customer."
+        ),
         control="Read-only replica + parameterised query builder (no raw SQL) + row cap.",
         role="source-private",
     ),
     ToolSpec(
         id="run_analysis",
         name="Run Analysis",
-        description="Run a sandboxed, network-isolated computation over query results to aggregate or summarise them.",
+        description=(
+            "Run a sandboxed, network-isolated computation over query results "
+            "to aggregate or summarise them."
+        ),
         control="Restricted sandbox: no network, no filesystem, no imports, time-limited.",
         role="compute",
     ),
     ToolSpec(
         id="fetch_reference",
         name="Fetch Reference",
-        description="Fetch reference data (FX rates, public benchmarks) from an allowlisted set of external sources.",
+        description=(
+            "Fetch reference data (FX rates, public benchmarks) from an "
+            "allowlisted set of external sources."
+        ),
         control="Egress allowlist on destination host. (Returned content is untrusted.)",
         role="source-untrusted",
     ),

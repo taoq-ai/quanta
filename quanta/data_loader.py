@@ -102,9 +102,16 @@ def load_real(db_path: Path, row_cap: int | None) -> int:
 def load_synthetic(db_path: Path, n: int = 5000) -> int:
     """Deterministic, offline sample shaped like Online Retail II."""
     countries = [
-        ("United Kingdom", 0.50), ("Germany", 0.12), ("France", 0.10), ("EIRE", 0.08),
-        ("Spain", 0.05), ("Netherlands", 0.05), ("Belgium", 0.04), ("Portugal", 0.03),
-        ("Australia", 0.02), ("Norway", 0.01),
+        ("United Kingdom", 0.50),
+        ("Germany", 0.12),
+        ("France", 0.10),
+        ("EIRE", 0.08),
+        ("Spain", 0.05),
+        ("Netherlands", 0.05),
+        ("Belgium", 0.04),
+        ("Portugal", 0.03),
+        ("Australia", 0.02),
+        ("Norway", 0.01),
     ]
     products = [
         ("85123A", "WHITE HANGING HEART T-LIGHT HOLDER", 2.55),

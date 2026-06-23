@@ -1,7 +1,7 @@
 """Run Quanta locally (no AWS) — a quick smoke test of the assistant.
 
-    QUANTA_STUB=1 PYTHONPATH=. python scripts/run_local.py
-    QUANTA_STUB=1 PYTHONPATH=. python scripts/run_local.py "top customers by orders"
+QUANTA_STUB=1 PYTHONPATH=. python scripts/run_local.py
+QUANTA_STUB=1 PYTHONPATH=. python scripts/run_local.py "top customers by orders"
 """
 
 from __future__ import annotations

@@ -27,7 +27,9 @@ class AllowlistedReferenceData:
     def fetch(self, url: str) -> ReferenceDocument:
         host = urlparse(url).hostname or ""
         if host not in self._allowlist:
-            raise PermissionError(f"host {host!r} is not on the reference allowlist {self._allowlist}")
+            raise PermissionError(
+                f"host {host!r} is not on the reference allowlist {self._allowlist}"
+            )
         resp = httpx.get(url, timeout=10.0, follow_redirects=False)
         resp.raise_for_status()
         # trusted=False, always: destination was checked, content was not.

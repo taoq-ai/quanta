@@ -23,9 +23,6 @@ import argparse
 import asyncio
 from pathlib import Path
 
-from quanta.agent import invoke
-from quanta.capabilities import DATA_FLOW, TOOL_CATALOG
-
 from ziran.application.agent_scanner.scanner import AgentScanner
 from ziran.application.attacks.library import AttackLibrary
 from ziran.application.knowledge_graph.chain_analyzer import ToolChainAnalyzer
@@ -34,6 +31,9 @@ from ziran.domain.entities.capability import AgentCapability, CapabilityType
 from ziran.domain.entities.phase import ScanPhase
 from ziran.infrastructure.adapters.agentcore_adapter import AgentCoreAdapter
 from ziran.interfaces.cli.reports import ReportGenerator
+
+from quanta.agent import invoke
+from quanta.capabilities import DATA_FLOW, TOOL_CATALOG
 
 
 class QuantaAdapter(AgentCoreAdapter):
@@ -55,7 +55,9 @@ class QuantaAdapter(AgentCoreAdapter):
 def _enrich_composition(graph) -> None:
     """Add the agent's composition surface (tool -> tool data-flow edges)."""
     for src, tgt in DATA_FLOW:
-        graph.add_edge(src, tgt, EdgeType.CAN_CHAIN_TO, {"reason": "agent can sequence these tools"})
+        graph.add_edge(
+            src, tgt, EdgeType.CAN_CHAIN_TO, {"reason": "agent can sequence these tools"}
+        )
 
 
 async def main() -> None:

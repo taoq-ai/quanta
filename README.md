@@ -65,9 +65,32 @@ open reports/*.html
 
 ## Deploy for real (Amazon Bedrock AgentCore)
 
+Infrastructure-as-code and CI/CD live in [`infra/`](infra/) and
+[`.github/workflows/`](.github/workflows/). Full guide:
+[`docs/deployment.md`](docs/deployment.md).
+
+**One-time IAM bootstrap** (AWS CDK — creates a GitHub-OIDC deploy role and the
+AgentCore runtime execution role):
+
+```bash
+cd infra
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+cdk bootstrap          # one-time per account/region
+cdk deploy             # prints DeployRoleArn + ExecutionRoleArn
+# Copy the two output ARNs into GitHub repo variables (see docs/deployment.md).
+```
+
+**Deploy via GitHub Actions** (recommended) — push to `main` or run the
+*Deploy to AgentCore* workflow. The image is built in AWS CodeBuild (no Docker),
+then `agentcore launch` + a smoke `agentcore invoke` run automatically.
+
+**Deploy from your machine:**
+
 ```bash
 pip install -e '.[agentcore]'
-./scripts/deploy.sh          # agentcore configure + launch
+export AGENTCORE_EXECUTION_ROLE_ARN=<ExecutionRoleArn from the bootstrap stack>
+./scripts/deploy.sh          # agentcore configure + launch (CodeBuild build)
 ./scripts/invoke_demo.sh     # prove it's a real, working assistant
 ```
 

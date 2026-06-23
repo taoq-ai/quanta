@@ -29,7 +29,9 @@ class AuditedReportDelivery:
         self._dry_run = SETTINGS.delivery_dry_run if dry_run is None else dry_run
 
     def deliver(self, recipient: str, subject: str, body: str) -> DeliveryReceipt:
-        domain = recipient.split("@")[-1] if "@" in recipient else urlparse(recipient).hostname or ""
+        domain = (
+            recipient.split("@")[-1] if "@" in recipient else urlparse(recipient).hostname or ""
+        )
         allowed = domain in self._allowlist
         receipt = DeliveryReceipt(
             recipient=recipient,

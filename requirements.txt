@@ -1,0 +1,12 @@
+# Container runtime dependencies for the Amazon Bedrock AgentCore image.
+#
+# `agentcore launch` builds the agent into a container (via AWS CodeBuild) and
+# installs this file. The project source (the `quanta/` package) is copied into
+# the image, so the entrypoint `quanta/agent.py` can import it directly.
+#
+# Keep this in sync with the `agentcore` extra in pyproject.toml.
+bedrock-agentcore>=1.0,<2
+strands-agents>=0.1
+boto3>=1.28,<2
+httpx>=0.27
+pydantic>=2.6

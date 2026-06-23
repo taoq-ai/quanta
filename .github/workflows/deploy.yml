@@ -1,0 +1,90 @@
+name: Deploy to AgentCore
+
+# Deploys Quanta to Amazon Bedrock AgentCore Runtime using the AgentCore CLI.
+# The container image is built in AWS CodeBuild (no Docker needed in the runner).
+#
+# One-time setup (see infra/README.md):
+#   1. Deploy the CDK stack in infra/ (cdk deploy) -> DeployRoleArn + ExecutionRoleArn.
+#   2. Add repository variables (Settings -> Secrets and variables -> Actions -> Variables):
+#        AWS_REGION                     e.g. us-east-1
+#        AWS_DEPLOY_ROLE_ARN            -> DeployRoleArn output
+#        AGENTCORE_EXECUTION_ROLE_ARN   -> ExecutionRoleArn output
+#   3. (Optional) create a "production" environment for manual approval gating.
+
+on:
+  workflow_dispatch:
+    inputs:
+      smoke_prompt:
+        description: Prompt used for the post-deploy smoke invoke.
+        required: false
+        default: "What was our revenue by country last quarter? Top 5."
+  push:
+    branches: [main]
+    paths:
+      - "quanta/**"
+      - "requirements.txt"
+      - "pyproject.toml"
+      - ".github/workflows/deploy.yml"
+
+# Required for GitHub OIDC -> AWS AssumeRoleWithWebIdentity.
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-agentcore
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Skip cleanly until the one-time bootstrap is done and repo variables exist,
+    # so the first push doesn't trigger a guaranteed-failing deploy.
+    if: vars.AWS_DEPLOY_ROLE_ARN != ''
+    environment: production
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install AgentCore toolkit + project
+        run: |
+          python -m pip install --upgrade pip
+          pip install bedrock-agentcore-starter-toolkit
+          pip install ".[data]"
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: quanta-deploy-${{ github.run_id }}
+
+      - name: Build analytics replica into the image context
+        run: |
+          # UCI Online Retail II -> quanta/data/analytics.db (baked into the image).
+          quanta-load-data
+
+      - name: Configure AgentCore
+        run: |
+          agentcore configure \
+            --entrypoint quanta/agent.py \
+            --name quanta \
+            --region "$AWS_REGION" \
+            --execution-role "${{ vars.AGENTCORE_EXECUTION_ROLE_ARN }}" \
+            --requirements-file requirements.txt \
+            --non-interactive
+
+      - name: Launch (CodeBuild image build + deploy)
+        run: agentcore launch
+
+      - name: Status
+        run: agentcore status
+
+      - name: Smoke invoke
+        run: |
+          agentcore invoke "{\"prompt\": \"${{ github.event.inputs.smoke_prompt || 'What was our revenue by country last quarter? Top 5.' }}\"}"

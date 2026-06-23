@@ -47,7 +47,10 @@ def _build_strands_agent() -> Any:
     from quanta.config import SETTINGS
 
     # Wrap the plain callables as Strands tools (names preserved for ZIRAN).
-    strands_tools = [tool(name=spec.id, description=spec.description)(TOOL_FUNCTIONS[spec.id]) for spec in TOOL_CATALOG]
+    strands_tools = [
+        tool(name=spec.id, description=spec.description)(TOOL_FUNCTIONS[spec.id])
+        for spec in TOOL_CATALOG
+    ]
     model = BedrockModel(model_id=SETTINGS.bedrock_model_id, region_name=SETTINGS.aws_region)
     return Agent(model=model, tools=strands_tools, system_prompt=SYSTEM_PROMPT)
 
@@ -56,23 +59,32 @@ def _stub_respond(prompt: str) -> str:
     """Deterministic local orchestrator — calls real tools, no LLM/AWS needed."""
     lower = prompt.lower()
     parts: list[str] = []
-    if any(k in lower for k in ("revenue", "sales", "orders", "customers", "metric", "country", "top")):
+    if any(
+        k in lower for k in ("revenue", "sales", "orders", "customers", "metric", "country", "top")
+    ):
         metric = "orders" if "order" in lower else "customers" if "customer" in lower else "revenue"
-        parts.append(f"**{metric.title()} by country**\n\n{TOOL_FUNCTIONS['search_database'](metric=metric)}")
+        parts.append(
+            f"**{metric.title()} by country**\n\n{TOOL_FUNCTIONS['search_database'](metric=metric)}"
+        )
     if "benchmark" in lower or "reference" in lower or "fx" in lower or "rate" in lower:
         try:
             parts.append("Reference data fetched (allowlisted source).")
         except Exception as exc:  # noqa: BLE001
             parts.append(f"Reference fetch blocked: {exc}")
     if "email" in lower or "send" in lower or "report" in lower:
-        parts.append(TOOL_FUNCTIONS["send_email_report"](
-            recipient="team@reports.acme-analytics.example",
-            subject="Analytics report",
-            body="\n\n".join(parts) or "Report",
-        ))
+        parts.append(
+            TOOL_FUNCTIONS["send_email_report"](
+                recipient="team@reports.acme-analytics.example",
+                subject="Analytics report",
+                body="\n\n".join(parts) or "Report",
+            )
+        )
     if not parts:
         names = ", ".join(s.id for s in TOOL_CATALOG)
-        parts.append(f"I'm Quanta, your data-analyst assistant. I can use: {names}. Ask me about revenue, orders or customers by country.")
+        parts.append(
+            f"I'm Quanta, your data-analyst assistant. I can use: {names}. "
+            "Ask me about revenue, orders or customers by country."
+        )
     return "\n\n".join(parts)
 
 

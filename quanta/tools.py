@@ -7,6 +7,8 @@ directly. Each callable is thin; the control lives in its adapter.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from quanta.adapters import (
     AllowlistedReferenceData,
     AuditedReportDelivery,
@@ -50,7 +52,7 @@ def send_email_report(recipient: str, subject: str, body: str) -> str:
     return f"Report {status} to {receipt.recipient} ({receipt.bytes_sent} bytes)."
 
 
-TOOL_FUNCTIONS = {
+TOOL_FUNCTIONS: dict[str, Callable[..., str]] = {
     "search_database": search_database,
     "run_analysis": run_analysis,
     "fetch_reference": fetch_reference,

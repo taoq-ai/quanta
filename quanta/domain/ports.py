@@ -19,7 +19,9 @@ class MetricsRepositoryPort(Protocol):
     builder (no raw SQL from the model); row cap.
     """
 
-    def query(self, metric: str, *, group_by: str | None = None, limit: int | None = None) -> QueryResult: ...
+    def query(
+        self, metric: str, *, group_by: str | None = None, limit: int | None = None
+    ) -> QueryResult: ...
 
     def customer_history(self, customer_id: str) -> QueryResult: ...
 

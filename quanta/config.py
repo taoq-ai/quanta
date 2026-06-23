@@ -20,7 +20,9 @@ class Settings:
     """Runtime settings and per-tool guardrails."""
 
     # search_database — read-only analytics replica (least privilege).
-    db_path: Path = field(default_factory=lambda: Path(os.getenv("QUANTA_DB_PATH", str(DEFAULT_DB_PATH))))
+    db_path: Path = field(
+        default_factory=lambda: Path(os.getenv("QUANTA_DB_PATH", str(DEFAULT_DB_PATH)))
+    )
     db_read_only: bool = True
     max_rows_returned: int = 1000
 
@@ -37,12 +39,16 @@ class Settings:
 
     # send_email_report — audited, recipient-domain allowlisted delivery.
     delivery_domain_allowlist: tuple[str, ...] = ("reports.acme-analytics.example",)
-    delivery_audit_log: Path = field(default_factory=lambda: REPO_ROOT / "quanta" / "data" / "delivery_audit.log")
+    delivery_audit_log: Path = field(
+        default_factory=lambda: REPO_ROOT / "quanta" / "data" / "delivery_audit.log"
+    )
     delivery_dry_run: bool = True  # never actually sends — safe to deploy
 
     # Model used when deployed on AgentCore (ignored in local stub mode).
     bedrock_model_id: str = field(
-        default_factory=lambda: os.getenv("QUANTA_MODEL_ID", "anthropic.claude-3-5-sonnet-20241022-v2:0")
+        default_factory=lambda: os.getenv(
+            "QUANTA_MODEL_ID", "anthropic.claude-3-5-sonnet-20241022-v2:0"
+        )
     )
     aws_region: str = field(default_factory=lambda: os.getenv("AWS_REGION", "us-east-1"))
 
