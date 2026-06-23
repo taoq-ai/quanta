@@ -23,14 +23,22 @@ import argparse
 import asyncio
 from pathlib import Path
 
-from ziran.application.agent_scanner.scanner import AgentScanner
-from ziran.application.attacks.library import AttackLibrary
-from ziran.application.knowledge_graph.chain_analyzer import ToolChainAnalyzer
-from ziran.application.knowledge_graph.graph import EdgeType
-from ziran.domain.entities.capability import AgentCapability, CapabilityType
-from ziran.domain.entities.phase import ScanPhase
-from ziran.infrastructure.adapters.agentcore_adapter import AgentCoreAdapter
-from ziran.interfaces.cli.reports import ReportGenerator
+try:
+    from ziran.application.agent_scanner.scanner import AgentScanner
+    from ziran.application.attacks.library import AttackLibrary
+    from ziran.application.knowledge_graph.chain_analyzer import ToolChainAnalyzer
+    from ziran.application.knowledge_graph.graph import EdgeType
+    from ziran.domain.entities.capability import AgentCapability, CapabilityType
+    from ziran.domain.entities.phase import ScanPhase
+    from ziran.infrastructure.adapters.agentcore_adapter import AgentCoreAdapter
+    from ziran.interfaces.cli.reports import ReportGenerator
+except ModuleNotFoundError as exc:  # pragma: no cover
+    raise SystemExit(
+        "\nThis scan needs ZIRAN, which is not installed.\n"
+        "  install from PyPI:   pip install 'ziran[agentcore]'\n"
+        "  or a local checkout: pip install -e ../ziran\n"
+        "Then re-run.  (The exploit demo — scripts/exploit_demo.py — needs nothing.)\n"
+    ) from exc
 
 from quanta.agent import invoke
 from quanta.capabilities import DATA_FLOW, TOOL_CATALOG

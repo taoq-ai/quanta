@@ -39,10 +39,19 @@ ask "Who are our top customers by number of orders?"; pause
 
 # ── Part 2 — find the composition, live ──────────────────────────────────────
 step "2/3  Now turn ZIRAN on it — find what the tools can do *together*"
-run "QUANTA_STUB=1 python scripts/scan_quanta.py --out reports"
-QUANTA_STUB=1 PYTHONPATH=. python scripts/scan_quanta.py --out reports
-HTML="$(ls -t reports/*_report.html 2>/dev/null | head -1 || true)"
-[ -n "${HTML}" ] && { run "open ${HTML}"; (open "${HTML}" 2>/dev/null || xdg-open "${HTML}" 2>/dev/null || true); }
+if python -c "import ziran" >/dev/null 2>&1; then
+  run "QUANTA_STUB=1 python scripts/scan_quanta.py --out reports"
+  QUANTA_STUB=1 PYTHONPATH=. python scripts/scan_quanta.py --out reports
+  HTML="$(ls -t reports/*_report.html 2>/dev/null | head -1 || true)"
+else
+  printf '   \033[33mZIRAN is not installed — skipping the live scan.\033[0m\n'
+  echo "   install:  pip install 'ziran[agentcore]'   (or: pip install -e ../ziran)"
+  echo "   opening the pre-generated report instead."
+  HTML="reports/quanta_scan_report.html"
+fi
+if [ -n "${HTML:-}" ] && [ -f "${HTML}" ]; then
+  run "open ${HTML}"; (open "${HTML}" 2>/dev/null || xdg-open "${HTML}" 2>/dev/null || true)
+fi
 pause
 
 # ── Part 3 — the breach and the fix (optional) ───────────────────────────────
