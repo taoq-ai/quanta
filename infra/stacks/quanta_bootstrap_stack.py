@@ -24,27 +24,32 @@ class QuantaBootstrapStack(cdk.Stack):
         org = _ctx(self, "github_org", "taoq-ai")
         repo = _ctx(self, "github_repo", "quanta")
         ref = _ctx(self, "github_ref", "*")
-        model_id = _ctx(self, "bedrock_model_id", "anthropic.claude-3-5-sonnet-20241022-v2:0")
         create_oidc = _ctx(self, "create_oidc_provider", "true").lower() != "false"
 
         # ── GitHub Actions OIDC provider (create or reference existing) ─────
-        provider_url = "https://token.actions.githubusercontent.com"
-        oidc_provider: iam.IOpenIdConnectProvider
+        # Use the native L1 resource (no Lambda-backed custom resource), so the
+        # stack has no assets and needs no `cdk bootstrap` S3 bucket.
+        cfn_oidc: iam.CfnOIDCProvider | None = None
         if create_oidc:
-            oidc_provider = iam.OpenIdConnectProvider(
+            cfn_oidc = iam.CfnOIDCProvider(
                 self,
                 "GitHubOidcProvider",
-                url=provider_url,
-                client_ids=["sts.amazonaws.com"],
+                url="https://token.actions.githubusercontent.com",
+                client_id_list=["sts.amazonaws.com"],
+                thumbprint_list=[
+                    "6938fd4d98bab03faadb97b34396831e3780aea1",
+                    "1c58a3a8518e8759bf075b76b750d4f2df264fcd",
+                ],
             )
+            provider_arn = cfn_oidc.attr_arn
         else:
-            arn = f"arn:aws:iam::{self.account}:oidc-provider/token.actions.githubusercontent.com"
-            oidc_provider = iam.OpenIdConnectProvider.from_open_id_connect_provider_arn(
-                self, "GitHubOidcProviderExisting", arn
+            provider_arn = (
+                f"arn:aws:iam::{self.account}:oidc-provider/token.actions.githubusercontent.com"
             )
 
-        github_principal = iam.OpenIdConnectPrincipal(
-            oidc_provider,
+        github_principal = iam.FederatedPrincipal(
+            provider_arn,
+            assume_role_action="sts:AssumeRoleWithWebIdentity",
             conditions={
                 "StringEquals": {
                     "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
@@ -75,9 +80,11 @@ class QuantaBootstrapStack(cdk.Stack):
             iam.PolicyStatement(
                 sid="InvokeBedrockModel",
                 actions=["bedrock:InvokeModel", "bedrock:InvokeModelWithResponseStream"],
+                # Cover both direct foundation models and cross-region inference
+                # profiles (EU regions require an inference profile for Claude).
                 resources=[
-                    f"arn:aws:bedrock:{self.region}::foundation-model/{model_id}",
-                    f"arn:aws:bedrock:*::foundation-model/{model_id}",
+                    "arn:aws:bedrock:*::foundation-model/anthropic.*",
+                    f"arn:aws:bedrock:*:{self.account}:inference-profile/*",
                 ],
             )
         )
@@ -132,6 +139,8 @@ class QuantaBootstrapStack(cdk.Stack):
             assumed_by=github_principal,
             max_session_duration=cdk.Duration.hours(1),
         )
+        if cfn_oidc is not None:
+            deploy_role.node.add_dependency(cfn_oidc)
         deploy_role.add_to_policy(
             iam.PolicyStatement(
                 sid="AgentCoreControlPlane", actions=["bedrock-agentcore:*"], resources=["*"]

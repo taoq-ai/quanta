@@ -15,6 +15,22 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_DB_PATH = REPO_ROOT / "quanta" / "data" / "analytics.db"
 
 
+def _default_model_id() -> str:
+    """Pick a Bedrock model id, region-aware.
+
+    ``QUANTA_MODEL_ID`` always wins. Otherwise: EU Bedrock does not offer the
+    direct Claude 3.5 Sonnet model, so in ``eu-*`` regions default to an EU
+    cross-region inference profile; elsewhere keep the direct model id.
+    """
+    explicit = os.getenv("QUANTA_MODEL_ID")
+    if explicit:
+        return explicit
+    region = os.getenv("AWS_REGION", "us-east-1")
+    if region.startswith("eu-"):
+        return "eu.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    return "anthropic.claude-3-5-sonnet-20241022-v2:0"
+
+
 @dataclass(frozen=True)
 class Settings:
     """Runtime settings and per-tool guardrails."""
@@ -45,11 +61,8 @@ class Settings:
     delivery_dry_run: bool = True  # never actually sends — safe to deploy
 
     # Model used when deployed on AgentCore (ignored in local stub mode).
-    bedrock_model_id: str = field(
-        default_factory=lambda: os.getenv(
-            "QUANTA_MODEL_ID", "anthropic.claude-3-5-sonnet-20241022-v2:0"
-        )
-    )
+    # Region-aware: EU regions use a Claude inference profile (see above).
+    bedrock_model_id: str = field(default_factory=_default_model_id)
     aws_region: str = field(default_factory=lambda: os.getenv("AWS_REGION", "us-east-1"))
 
 

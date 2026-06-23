@@ -1,3 +1,5 @@
 # CDK app dependencies (separate from the agent's container requirements.txt).
-aws-cdk-lib>=2.140,<3
+# Pinned to a cloud-assembly schema (<=43) that older `cdk` CLIs can read; any
+# recent CDK CLI reads it fine too. Bump freely if your CLI is current.
+aws-cdk-lib>=2.196,<2.200
 constructs>=10.0,<11
