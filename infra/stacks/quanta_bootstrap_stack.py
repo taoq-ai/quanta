@@ -248,13 +248,12 @@ class QuantaBootstrapStack(cdk.Stack):
         deploy_role.add_to_policy(
             iam.PolicyStatement(
                 sid="AgentCoreServiceLinkedRole",
+                # CreateAgentRuntime provisions one or more service-linked roles
+                # under aws-service-role/ (e.g. *BedrockAgentCoreGatewayNetwork,
+                # *BedrockAgentCoreRuntime). Allow any SLR so it isn't blocked by
+                # a too-narrow service-name/path match.
                 actions=["iam:CreateServiceLinkedRole"],
-                resources=[
-                    "arn:aws:iam::*:role/aws-service-role/bedrock-agentcore.amazonaws.com/*"
-                ],
-                conditions={
-                    "StringEquals": {"iam:AWSServiceName": "bedrock-agentcore.amazonaws.com"}
-                },
+                resources=["arn:aws:iam::*:role/aws-service-role/*"],
             )
         )
         deploy_role.add_to_policy(
