@@ -247,6 +247,18 @@ class QuantaBootstrapStack(cdk.Stack):
         )
         deploy_role.add_to_policy(
             iam.PolicyStatement(
+                sid="AgentCoreServiceLinkedRole",
+                actions=["iam:CreateServiceLinkedRole"],
+                resources=[
+                    "arn:aws:iam::*:role/aws-service-role/bedrock-agentcore.amazonaws.com/*"
+                ],
+                conditions={
+                    "StringEquals": {"iam:AWSServiceName": "bedrock-agentcore.amazonaws.com"}
+                },
+            )
+        )
+        deploy_role.add_to_policy(
+            iam.PolicyStatement(
                 sid="Identity",
                 actions=["sts:GetCallerIdentity", "ssm:GetParameter", "ssm:GetParameters"],
                 resources=["*"],
