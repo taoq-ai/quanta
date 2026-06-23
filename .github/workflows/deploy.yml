@@ -66,8 +66,10 @@ jobs:
 
       - name: Build analytics replica into the image context
         run: |
-          # UCI Online Retail II -> quanta/data/analytics.db (baked into the image).
-          quanta-load-data
+          # Build into the SOURCE tree (not the installed package's site-packages)
+          # so `agentcore launch` bakes the replica into the image. The metrics
+          # adapter also self-heals with a synthetic DB if this is ever absent.
+          quanta-load-data --db quanta/data/analytics.db
 
       - name: Configure AgentCore
         run: |

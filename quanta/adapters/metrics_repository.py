@@ -35,6 +35,13 @@ class ReadOnlyMetricsRepository:
         self._db_path = db_path or SETTINGS.db_path
 
     def _connect(self) -> sqlite3.Connection:
+        # Self-heal: if the replica is missing (e.g. not baked into the deployed
+        # image), build a small offline synthetic sample so the agent still works.
+        if not self._db_path.exists():
+            from quanta.data_loader import load_synthetic
+
+            self._db_path.parent.mkdir(parents=True, exist_ok=True)
+            load_synthetic(self._db_path)
         # Read-only URI connection — writes are impossible even if attempted.
         uri = f"file:{self._db_path}?mode=ro"
         return sqlite3.connect(uri, uri=True)
