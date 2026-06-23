@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 460" font-family="-apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="ge-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#64748b"/></marker>
+    <marker id="ge-red" markerWidth="11" markerHeight="11" refX="7" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7 Z" fill="#dc2626"/></marker>
+    <style>
+      .h{font-size:18px;font-weight:700;fill:#0f172a}
+      .cap{font-size:13px;fill:#64748b}
+      .n{fill:#ecfdf5;stroke:#10b981;stroke-width:2}
+      .nt{font-size:11px;font-weight:700;fill:#065f46;text-anchor:middle}
+      .nbad{fill:#fef2f2;stroke:#dc2626;stroke-width:2.5}
+      .ntbad{font-size:11px;font-weight:700;fill:#b91c1c;text-anchor:middle}
+      .e{stroke:#94a3b8;stroke-width:1.6;fill:none}
+      .er{stroke:#dc2626;stroke-width:3.5;fill:none}
+      .tag{font-size:12px;font-weight:700}
+    </style>
+  </defs>
+  <rect width="1200" height="460" fill="#ffffff"/>
+
+  <!-- ============ PANEL 1: nodes only ============ -->
+  <text x="40" y="40" class="h">1 · Four tools</text>
+  <text x="40" y="60" class="cap" fill="#059669">Each one passes review ✓</text>
+  <g transform="translate(40,90)">
+    <ellipse cx="60" cy="40" rx="58" ry="26" class="n"/><text x="60" y="44" class="nt">search_database</text>
+    <ellipse cx="260" cy="40" rx="52" ry="26" class="n"/><text x="260" y="44" class="nt">run_analysis</text>
+    <ellipse cx="60" cy="230" rx="56" ry="26" class="n"/><text x="60" y="234" class="nt">fetch_reference</text>
+    <ellipse cx="260" cy="230" rx="64" ry="26" class="n"/><text x="260" y="234" class="nt">send_email_report</text>
+  </g>
+
+  <!-- ============ PANEL 2: edges added ============ -->
+  <text x="450" y="40" class="h">2 · The agent can sequence them</text>
+  <text x="450" y="60" class="cap">Outputs flow into inputs — a graph</text>
+  <g transform="translate(450,90)">
+    <line x1="60" y1="60" x2="60" y2="206" class="e" marker-end="url(#ge-arr)"/>
+    <line x1="110" y1="50" x2="210" y2="216" class="e" marker-end="url(#ge-arr)"/>
+    <line x1="110" y1="56" x2="208" y2="44" class="e" marker-end="url(#ge-arr)"/>
+    <line x1="110" y1="220" x2="200" y2="60" class="e" marker-end="url(#ge-arr)"/>
+    <line x1="260" y1="66" x2="260" y2="204" class="e" marker-end="url(#ge-arr)"/>
+    <line x1="118" y1="226" x2="198" y2="232" class="e" marker-end="url(#ge-arr)"/>
+    <ellipse cx="60" cy="40" rx="58" ry="26" class="n"/><text x="60" y="44" class="nt">search_database</text>
+    <ellipse cx="260" cy="40" rx="52" ry="26" class="n"/><text x="260" y="44" class="nt">run_analysis</text>
+    <ellipse cx="60" cy="230" rx="56" ry="26" class="n"/><text x="60" y="234" class="nt">fetch_reference</text>
+    <ellipse cx="260" cy="230" rx="64" ry="26" class="n"/><text x="260" y="234" class="nt">send_email_report</text>
+  </g>
+
+  <!-- ============ PANEL 3: red path ============ -->
+  <text x="860" y="40" class="h">3 · One path is an exit</text>
+  <text x="860" y="60" class="cap" fill="#b91c1c">search_database → send_email_report</text>
+  <g transform="translate(860,90)">
+    <line x1="60" y1="60" x2="60" y2="206" class="e" marker-end="url(#ge-arr)"/>
+    <line x1="110" y1="50" x2="210" y2="216" class="e" marker-end="url(#ge-arr)"/>
+    <line x1="110" y1="56" x2="208" y2="44" class="e" marker-end="url(#ge-arr)"/>
+    <line x1="110" y1="220" x2="200" y2="60" class="e" marker-end="url(#ge-arr)"/>
+    <line x1="260" y1="66" x2="260" y2="204" class="e" marker-end="url(#ge-arr)"/>
+    <!-- red exfil edge -->
+    <path d="M70,64 C150,120 150,180 200,222" class="er" marker-end="url(#ge-red)"/>
+    <ellipse cx="60" cy="40" rx="58" ry="26" class="nbad"/><text x="60" y="44" class="ntbad">search_database</text>
+    <ellipse cx="260" cy="40" rx="52" ry="26" class="n"/><text x="260" y="44" class="nt">run_analysis</text>
+    <ellipse cx="60" cy="230" rx="56" ry="26" class="n"/><text x="60" y="234" class="nt">fetch_reference</text>
+    <ellipse cx="260" cy="230" rx="64" ry="26" class="nbad"/><text x="260" y="234" class="ntbad">send_email_report</text>
+  </g>
+  <text x="600" y="442" text-anchor="middle" class="tag" font-size="15" fill="#b91c1c">CRITICAL data exfiltration — found in the graph, not in any node</text>
+</svg>

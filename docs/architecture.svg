@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 660" font-family="-apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <style>
+      .title{font-size:26px;font-weight:700;fill:#0f172a}
+      .sub{font-size:14px;fill:#64748b}
+      .zone{fill:#f8fafc;stroke:#cbd5e1;stroke-width:1.5;rx:14}
+      .zlbl{font-size:13px;font-weight:700;fill:#64748b;letter-spacing:.06em}
+      .tool{fill:#eef2ff;stroke:#6366f1;stroke-width:1.5;rx:10}
+      .toolname{font-size:15px;font-weight:700;fill:#3730a3}
+      .store{fill:#f0f9ff;stroke:#0ea5e9;stroke-width:1.5;rx:10}
+      .storename{font-size:14px;font-weight:700;fill:#0c4a6e}
+      .ctrl{fill:#ecfdf5;stroke:#10b981;stroke-width:1.4;rx:8}
+      .ctrltxt{font-size:11.5px;fill:#065f46}
+      .ok{font-size:12px;font-weight:700;fill:#059669}
+      .edge{stroke:#475569;stroke-width:1.6;fill:none}
+      .actor{fill:#0f172a}
+      .actxt{font-size:13px;fill:#0f172a;font-weight:600}
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1100" height="660" fill="#ffffff"/>
+  <text x="40" y="46" class="title">Quanta — a defensible AgentCore architecture</text>
+  <text x="40" y="70" class="sub">Every tool is individually hardened. Every box below passes a tool-by-tool review.</text>
+
+  <!-- Analyst actor -->
+  <circle cx="78" cy="350" r="16" class="actor"/>
+  <rect x="58" y="368" width="40" height="22" rx="6" class="actor"/>
+  <text x="78" y="410" text-anchor="middle" class="actxt">Analyst</text>
+  <line x1="100" y1="360" x2="178" y2="360" class="edge" marker-end="url(#arrow)"/>
+
+  <!-- AgentCore Runtime zone -->
+  <rect x="180" y="120" width="430" height="470" class="zone"/>
+  <text x="200" y="148" class="zlbl">AMAZON BEDROCK AGENTCORE RUNTIME</text>
+
+  <!-- Quanta agent core -->
+  <rect x="210" y="300" width="160" height="120" rx="12" fill="#fff" stroke="#6366f1" stroke-width="2"/>
+  <text x="290" y="346" text-anchor="middle" class="toolname" font-size="17">Quanta</text>
+  <text x="290" y="368" text-anchor="middle" class="sub">analyst agent</text>
+  <text x="290" y="392" text-anchor="middle" class="sub">(Strands + Claude)</text>
+
+  <!-- four tools -->
+  <rect x="410" y="172" width="180" height="44" class="tool"/>
+  <text x="424" y="199" class="toolname">search_database</text>
+
+  <rect x="410" y="280" width="180" height="44" class="tool"/>
+  <text x="424" y="307" class="toolname">run_analysis</text>
+
+  <rect x="410" y="388" width="180" height="44" class="tool"/>
+  <text x="424" y="415" class="toolname">fetch_reference</text>
+
+  <rect x="410" y="496" width="180" height="44" class="tool"/>
+  <text x="424" y="523" class="toolname">send_email_report</text>
+
+  <!-- agent->tool edges -->
+  <line x1="370" y1="330" x2="410" y2="194" class="edge" marker-end="url(#arrow)"/>
+  <line x1="370" y1="338" x2="410" y2="302" class="edge" marker-end="url(#arrow)"/>
+  <line x1="370" y1="378" x2="410" y2="410" class="edge" marker-end="url(#arrow)"/>
+  <line x1="370" y1="392" x2="410" y2="518" class="edge" marker-end="url(#arrow)"/>
+
+  <!-- Data / egress plane zone -->
+  <rect x="660" y="120" width="400" height="470" class="zone"/>
+  <text x="680" y="148" class="zlbl">DATA &amp; EGRESS PLANE</text>
+
+  <!-- stores + controls -->
+  <rect x="690" y="168" width="180" height="52" rx="10" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="1.5"/>
+  <text x="704" y="190" class="storename">Read-only replica</text>
+  <text x="704" y="208" class="sub">UCI Online Retail II</text>
+  <rect x="884" y="172" width="160" height="44" class="ctrl"/>
+  <text x="894" y="190" class="ok">✓ control</text>
+  <text x="894" y="207" class="ctrltxt">read-only · param. queries</text>
+
+  <rect x="690" y="276" width="180" height="52" rx="10" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="1.5"/>
+  <text x="704" y="298" class="storename">Sandbox runtime</text>
+  <text x="704" y="316" class="sub">no net · no fs</text>
+  <rect x="884" y="280" width="160" height="44" class="ctrl"/>
+  <text x="894" y="298" class="ok">✓ control</text>
+  <text x="894" y="315" class="ctrltxt">import-less · time-limited</text>
+
+  <rect x="690" y="384" width="180" height="52" rx="10" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="704" y="406" class="storename">External reference</text>
+  <text x="704" y="424" class="sub">FX / benchmarks</text>
+  <rect x="884" y="388" width="160" height="44" class="ctrl"/>
+  <text x="894" y="406" class="ok">✓ control</text>
+  <text x="894" y="423" class="ctrltxt">egress allowlist (dest.)</text>
+
+  <rect x="690" y="492" width="180" height="52" rx="10" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="704" y="514" class="storename">Report delivery</text>
+  <text x="704" y="532" class="sub">allowlisted domain</text>
+  <rect x="884" y="496" width="160" height="44" class="ctrl"/>
+  <text x="894" y="514" class="ok">✓ control</text>
+  <text x="894" y="531" class="ctrltxt">audit log · dry-run</text>
+
+  <!-- tool->store edges -->
+  <line x1="590" y1="194" x2="690" y2="194" class="edge" marker-end="url(#arrow)"/>
+  <line x1="590" y1="302" x2="690" y2="302" class="edge" marker-end="url(#arrow)"/>
+  <line x1="590" y1="410" x2="690" y2="410" class="edge" marker-end="url(#arrow)"/>
+  <line x1="590" y1="518" x2="690" y2="518" class="edge" marker-end="url(#arrow)"/>
+
+  <text x="40" y="636" class="sub">Hexagonal: ports in domain/, one control-enforcing adapter per tool. See architecture-overlay.svg for the residual composition path.</text>
+</svg>

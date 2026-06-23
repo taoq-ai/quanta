@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 560" font-family="-apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="rb-red" markerWidth="11" markerHeight="11" refX="7" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7 Z" fill="#dc2626"/></marker>
+    <style>
+      .h{font-size:24px;font-weight:700;fill:#0f172a}
+      .col{font-size:15px;font-weight:700;letter-spacing:.04em}
+      .card{fill:#ecfdf5;stroke:#10b981;stroke-width:1.6;rx:10}
+      .ct{font-size:15px;font-weight:700;fill:#065f46}
+      .ok{font-size:13px;font-weight:700;fill:#059669}
+      .node{fill:#fff;stroke:#cbd5e1;stroke-width:1.6}
+      .nbad{fill:#fef2f2;stroke:#dc2626;stroke-width:2.5}
+      .nt{font-size:11px;font-weight:700;text-anchor:middle;fill:#334155}
+      .ntb{font-size:11px;font-weight:700;text-anchor:middle;fill:#b91c1c}
+      .e{stroke:#cbd5e1;stroke-width:1.5;fill:none}
+      .er{stroke:#dc2626;stroke-width:3.5;fill:none}
+    </style>
+  </defs>
+  <rect width="1100" height="560" fill="#ffffff"/>
+  <text x="40" y="46" class="h">Two ways to look at the same agent</text>
+
+  <!-- LEFT: tool-by-tool review -->
+  <text x="40" y="92" class="col" fill="#059669">HOW REVIEWS LOOK — tool by tool</text>
+  <g>
+    <rect x="40" y="110" width="440" height="70" class="card"/><text x="60" y="142" class="ct">search_database</text><text x="60" y="164" class="ok">✓ read-only · parameterised · row cap</text>
+    <rect x="40" y="196" width="440" height="70" class="card"/><text x="60" y="228" class="ct">run_analysis</text><text x="60" y="250" class="ok">✓ sandboxed · no network · no imports</text>
+    <rect x="40" y="282" width="440" height="70" class="card"/><text x="60" y="314" class="ct">fetch_reference</text><text x="60" y="336" class="ok">✓ egress allowlist</text>
+    <rect x="40" y="368" width="440" height="70" class="card"/><text x="60" y="400" class="ct">send_email_report</text><text x="60" y="422" class="ok">✓ domain allowlist · audit · dry-run</text>
+  </g>
+  <text x="40" y="474" class="ok" font-size="16">Verdict: 4 / 4 approved ✓</text>
+
+  <!-- divider -->
+  <line x1="560" y1="100" x2="560" y2="470" stroke="#e2e8f0" stroke-width="2"/>
+
+  <!-- RIGHT: composition view -->
+  <text x="620" y="92" class="col" fill="#b91c1c">WHAT THE ATTACKER SEES — the graph</text>
+  <g transform="translate(640,150)">
+    <line x1="70" y1="40" x2="70" y2="196" class="e"/>
+    <line x1="120" y1="46" x2="250" y2="50" class="e"/>
+    <line x1="280" y1="70" x2="280" y2="196" class="e"/>
+    <line x1="120" y1="210" x2="250" y2="70" class="e"/>
+    <path d="M86,62 C160,120 150,180 230,214" class="er" marker-end="url(#rb-red)"/>
+    <ellipse cx="70" cy="40" rx="62" ry="26" class="nbad"/><text x="70" y="44" class="ntb">search_database</text>
+    <ellipse cx="280" cy="40" rx="52" ry="26" class="node"/><text x="280" y="44" class="nt">run_analysis</text>
+    <ellipse cx="70" cy="230" rx="58" ry="26" class="node"/><text x="70" y="234" class="nt">fetch_reference</text>
+    <ellipse cx="280" cy="230" rx="66" ry="26" class="nbad"/><text x="280" y="234" class="ntb">send_email_report</text>
+  </g>
+  <text x="620" y="474" class="ntb" font-size="16" fill="#b91c1c">Verdict: 1 critical exfiltration path ✗</text>
+  <text x="620" y="508" class="nt" font-size="14" fill="#64748b" text-anchor="start">Invisible to tool-by-tool review — it isn't in any tool.</text>
+</svg>

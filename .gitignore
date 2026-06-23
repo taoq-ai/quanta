@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Data artifacts (built locally via quanta-load-data)
+quanta/data/*.db
+quanta/data/*.zip
+quanta/data/*.log
+
+# Scan output (regenerate via scripts/scan_quanta.py)
+reports/*.json
+reports/*.md
+# Keep a frozen demo report + the talk's copy:
+!reports/quanta_scan_report.html
+
+# AgentCore / build
+.bedrock_agentcore/
+*.tar
+.DS_Store
+
+# Talk QA render artifacts (deck .pptx IS committed)
+talk/slide-*.jpg
+talk/*.pdf
