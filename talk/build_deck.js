@@ -221,27 +221,61 @@ imageSlide("…and the composition is still critical", "architecture-overlay.png
 imageSlide("This isn't a drawing — it's the scan", "ziran_report_dashboard.png", 1440, 1024,
   "One critical finding: search_database → send_email_report, data_exfiltration. I never labelled it — ZIRAN's built-in patterns did.");
 
-// 18 — credibility
+// 18 — section 4
+{ const s = p.addSlide(); section(s, "4", "From finding to breach — and back", "ZIRAN found the path. Now watch an attacker walk it — then watch us close it."); }
+
+// 19 — exploit, live
+imageSlide("Theoretical? Watch it happen — live, offline", "exploit_vulnerable.png", 1287, 368,
+  "Benign request + a poisoned reference → 16,741 bytes of customer PII to an attacker mailbox on the ALLOWLISTED domain. Every per-tool control held.");
+
+// 20 — three vulnerabilities, one agent
+{
+  const s = p.addSlide();
+  contentHead(s, "Three vulnerabilities, one agent");
+  const header = ["Vulnerability", "OWASP", "Where it lives", "Caught by"];
+  const data = [
+    ["Tool-composition exfiltration", "structural", "search_database → send_email_report", "ZIRAN — static, pre-attack"],
+    ["Indirect prompt injection", "LLM01", "fetched content from fetch_reference, obeyed as an instruction", "runtime policy"],
+    ["Excessive agency / confused deputy", "LLM06 / 08", "send_email_report trusts a model-chosen recipient", "runtime policy"],
+  ];
+  const rows = [
+    header.map((t) => ({ text: t, options: { bold: true, color: WHITE, fill: { color: INDIGO }, fontSize: 14, valign: "middle" } })),
+    ...data.map((r) => r.map((t, i) => ({
+      text: t,
+      options: { color: i === 0 ? INK : SLATE, bold: i === 0, fontSize: 13.5, valign: "middle", fill: { color: WHITE } },
+    }))),
+  ];
+  s.addTable(rows, { x: 0.7, y: 1.65, w: 11.93, colW: [3.7, 1.4, 4.5, 2.33], rowH: [0.5, 0.95, 0.95, 0.95], border: { type: "solid", color: "E2E8F0", pt: 1 }, fontFace: BODY });
+  s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 5.5, w: 11.93, h: 1.4, fill: { color: REDL }, line: { color: RED, width: 1 }, rectRadius: 0.1 });
+  s.addText("The composition is the precondition — ZIRAN finds it before anyone is attacked. The injection is the trigger; the model-chosen recipient is the missing control. All three live on four review-passing tools.",
+    { x: 1.05, y: 5.5, w: 11.2, h: 1.4, valign: "middle", fontFace: HEAD, fontSize: 17, color: "7F1D1D", bold: true, lineSpacingMultiple: 1.1 });
+}
+
+// 21 — credibility
 imageSlide("What's behind the scan", "credibility.png", 1100, 560, null);
 
-// 19 — what to do
+// 22 — hardened, live
+imageSlide("Break the graph: the same attack, blocked", "exploit_hardened.png", 1287, 343,
+  "One injected security policy. Injection refused as data; model-chosen recipient denied; the analyst's summary still goes out. Same agent, same payload.");
+
+// 23 — what actually breaks the path
 {
   const s = p.addSlide();
   contentHead(s, "The fix isn't 'remove a tool'. Break the graph.");
   const items = [
-    ["Taint / trust tracking", "Tainted data (private reads, untrusted content) can't reach an external sink without review."],
-    ["Trifecta gate", "No single agent holds all three legs. Split into separate, differently-privileged agents."],
-    ["Recipient binding", "Send to the authenticated requester — not a model-chosen address, even an allowlisted one."],
-    ["Re-scan in CI", "ziran ci fails the build when a newly-added tool completes a trifecta."],
+    ["No instructions from data  ·  LLM01", "Content from fetch_reference is data, never commands — the injected step never runs."],
+    ["Recipient binding  ·  LLM06", "send_email_report only reaches the authenticated requester — not a model-chosen address, even on an allowlisted domain."],
+    ["Trifecta gate  ·  taint tracking", "A run holding private + untrusted data can't reach an external sink unattended. Aggregates aren't private — the real task still works."],
+    ["Re-scan in CI  ·  ziran ci", "Fail the build when a newly-added tool completes a trifecta. Composition as a reviewable artifact."],
   ];
-  let y = 1.7;
+  let y = 1.65;
   items.forEach(([h, d]) => {
     s.addShape(p.ShapeType.roundRect, { x: 0.7, y, w: 11.93, h: 1.12, fill: { color: WHITE }, line: { color: "E2E8F0", width: 1 }, rectRadius: 0.1 });
-    s.addShape(p.ShapeType.ellipse, { x: 1.0, y: y + 0.31, w: 0.5, h: 0.5, fill: { color: INDIGO } });
+    s.addShape(p.ShapeType.ellipse, { x: 1.0, y: y + 0.31, w: 0.5, h: 0.5, fill: { color: GREEN } });
     s.addText("✓", { x: 1.0, y: y + 0.31, w: 0.5, h: 0.5, align: "center", valign: "middle", color: WHITE, fontSize: 18, bold: true });
-    s.addText(h, { x: 1.75, y, w: 3.6, h: 1.12, valign: "middle", fontFace: HEAD, fontSize: 18, color: INK, bold: true });
-    s.addText(d, { x: 5.4, y, w: 7.0, h: 1.12, valign: "middle", fontFace: BODY, fontSize: 15, color: SLATE });
-    y += 1.25;
+    s.addText(h, { x: 1.75, y, w: 4.4, h: 1.12, valign: "middle", fontFace: HEAD, fontSize: 16, color: INK, bold: true });
+    s.addText(d, { x: 6.2, y, w: 6.2, h: 1.12, valign: "middle", fontFace: BODY, fontSize: 14, color: SLATE, lineSpacingMultiple: 1.05 });
+    y += 1.22;
   });
 }
 
