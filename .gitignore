@@ -35,3 +35,6 @@ infra/cdk.context.json
 # Talk QA render artifacts (deck .pptx IS committed)
 talk/slide-*.jpg
 talk/*.pdf
+
+# transient timestamped scan artifacts (canonical frozen report is committed)
+reports/campaign_*
