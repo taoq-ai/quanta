@@ -152,7 +152,7 @@ imageSlide("Why most reviews can't catch it", "review-blindness.png", 1100, 560,
 { const s = p.addSlide(); section(s, "2", "Meet the target", "An agent I built. Try to find the problem while I describe it."); s.addNotes("Divider. 'Let me show you an agent I built — and I want you to try to find the problem while I describe it.'"); }
 
 // 10 — C4 solution design
-imageSlide("Quanta — the solution design (C4)", "c4-container.png", 1200, 770,
+imageSlide("Quanta — the solution design (C4)", "c4-container.png", 1180, 800,
   "Analyst → AgentCore runtime (Strands + Claude) → four tools → read-only replica, allowlisted (untrusted) reference, audited mail.",
   "Solution design, C4 container view. A real, sensible architecture: the analyst talks to the Quanta AgentCore runtime; a Strands agent backed by Bedrock Claude sequences four tool containers; those reach a read-only analytics replica, allowlisted external reference sources, and an audited mail relay. Point at the trust tags along the bottom: PRIVATE data in, UNTRUSTED content in, EXTERNAL send out — all three legs present in one runtime. Nothing here looks wrong yet.");
 
