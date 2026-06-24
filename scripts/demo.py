@@ -69,10 +69,7 @@ def _ziran_available() -> bool:
     # child of sys.executable reads site-packages fresh, so this is accurate
     # before *and* after a runtime install.
     return (
-        subprocess.run(
-            [sys.executable, "-c", "import ziran"], capture_output=True
-        ).returncode
-        == 0
+        subprocess.run([sys.executable, "-c", "import ziran"], capture_output=True).returncode == 0
     )
 
 
