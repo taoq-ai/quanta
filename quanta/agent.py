@@ -17,6 +17,7 @@ capability graph either way.
 from __future__ import annotations
 
 import os
+import re
 from typing import Any
 
 from quanta.capabilities import TOOL_CATALOG
@@ -55,23 +56,56 @@ def _build_strands_agent() -> Any:
     return Agent(model=model, tools=strands_tools, system_prompt=SYSTEM_PROMPT)
 
 
+def _plan_query(lower: str) -> tuple[str, str, str, int, bool]:
+    """Map a natural-language question to (metric, group_by, dimension, limit, explicit_top)."""
+    m = re.search(r"top\s+(\d+)", lower)
+    limit, explicit_top = (int(m.group(1)), True) if m else (10, False)
+    if "order" in lower:
+        metric = "orders"
+    elif "unit" in lower:
+        metric = "units"
+    else:  # revenue / sales / spend / default
+        metric = "revenue"
+    if "customer" in lower:
+        group_by, dimension = "customer_id", "customer"
+    elif "product" in lower:
+        group_by, dimension = "product", "product"
+    elif "month" in lower or "trend" in lower:
+        group_by, dimension = "month", "month"
+    else:
+        group_by, dimension = "country", "country"
+    return metric, group_by, dimension, limit, explicit_top
+
+
+_DATA_WORDS = (
+    "revenue",
+    "sales",
+    "spend",
+    "order",
+    "unit",
+    "customer",
+    "country",
+    "product",
+    "metric",
+    "top",
+    "how many",
+    "summar",
+    "analy",
+)
+
+
 def _stub_respond(prompt: str) -> str:
     """Deterministic local orchestrator — calls real tools, no LLM/AWS needed."""
     lower = prompt.lower()
     parts: list[str] = []
-    if any(
-        k in lower for k in ("revenue", "sales", "orders", "customers", "metric", "country", "top")
-    ):
-        metric = "orders" if "order" in lower else "customers" if "customer" in lower else "revenue"
-        parts.append(
-            f"**{metric.title()} by country**\n\n{TOOL_FUNCTIONS['search_database'](metric=metric)}"
-        )
-    if "benchmark" in lower or "reference" in lower or "fx" in lower or "rate" in lower:
-        try:
-            parts.append("Reference data fetched (allowlisted source).")
-        except Exception as exc:  # noqa: BLE001
-            parts.append(f"Reference fetch blocked: {exc}")
-    if "email" in lower or "send" in lower or "report" in lower:
+    if any(k in lower for k in _DATA_WORDS):
+        metric, group_by, dimension, limit, explicit_top = _plan_query(lower)
+        table = TOOL_FUNCTIONS["search_database"](metric=metric, group_by=group_by, limit=limit)
+        suffix = f" — top {limit}" if explicit_top else ""
+        parts.append(f"**{metric.capitalize()} by {dimension}{suffix}**\n\n{table}")
+    if any(k in lower for k in ("benchmark", "reference", "fx", "rate")):
+        parts.append("Reference data fetched from an allowlisted source.")
+    if any(k in lower for k in ("email", "send", "report")):
         parts.append(
             TOOL_FUNCTIONS["send_email_report"](
                 recipient="team@reports.acme-analytics.example",

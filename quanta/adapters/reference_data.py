@@ -12,8 +12,6 @@ from __future__ import annotations
 
 from urllib.parse import urlparse
 
-import httpx
-
 from quanta.config import SETTINGS
 from quanta.domain.models import ReferenceDocument
 
@@ -25,6 +23,16 @@ class AllowlistedReferenceData:
         self._allowlist = allowlist or SETTINGS.reference_allowlist
 
     def fetch(self, url: str) -> ReferenceDocument:
+        # Imported lazily so the offline demo (exploit + stub agent) runs with no
+        # third-party dependencies — only real outbound fetches need httpx.
+        try:
+            import httpx
+        except ModuleNotFoundError as exc:  # pragma: no cover
+            raise ModuleNotFoundError(
+                "fetch_reference needs httpx for real HTTP. Install the package "
+                "(`pip install -e .`) or use the offline demo, which does not fetch."
+            ) from exc
+
         host = urlparse(url).hostname or ""
         if host not in self._allowlist:
             raise PermissionError(

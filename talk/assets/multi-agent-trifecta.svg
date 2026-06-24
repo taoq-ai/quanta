@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 740" font-family="-apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#475569"/>
+    </marker>
+    <marker id="ared" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#dc2626"/>
+    </marker>
+    <style>
+      .h{font-size:25px;font-weight:700;fill:#0f172a}
+      .sub{font-size:14px;fill:#64748b}
+      .pt{font-size:18px;font-weight:700;fill:#ffffff;text-anchor:middle}
+      .ty{font-size:12px;fill:#e9e2f2;text-anchor:middle}
+      .conn{fill:none;stroke:#475569;stroke-width:2}
+      .red{fill:none;stroke:#dc2626;stroke-width:3;stroke-dasharray:8 5}
+      .redt{font-size:12px;font-weight:700;fill:#dc2626}
+      .tag{font-size:11px;font-weight:700;text-anchor:middle}
+      .chip{font-size:10px;font-weight:700;text-anchor:middle;fill:#7f1d1d}
+      .mem{font-size:15px;font-weight:700;fill:#334155;text-anchor:middle}
+    </style>
+  </defs>
+  <rect width="1180" height="740" fill="#ffffff"/>
+  <text x="40" y="44" class="h">Multi-agent: the trifecta, distributed across agents</text>
+  <text x="40" y="68" class="sub">Split the monolith into least-privileged agents — and the dangerous path just moves to the edges between them.</text>
+
+  <!-- Orchestrator -->
+  <rect x="440" y="92" width="300" height="64" rx="10" fill="#551f91"/>
+  <text x="590" y="120" class="pt">Orchestrator / Supervisor</text>
+  <text x="590" y="140" class="ty">routes &amp; delegates between agents</text>
+
+  <!-- delegation comb -->
+  <line x1="590" y1="156" x2="590" y2="196" class="conn"/>
+  <line x1="245" y1="196" x2="935" y2="196" class="conn"/>
+  <line x1="245" y1="196" x2="245" y2="248" class="conn" marker-end="url(#a)"/>
+  <line x1="590" y1="196" x2="590" y2="248" class="conn" marker-end="url(#a)"/>
+  <line x1="935" y1="196" x2="935" y2="248" class="conn" marker-end="url(#a)"/>
+
+  <!-- three least-privileged agents -->
+  <g>
+    <rect x="95" y="250" width="300" height="120" rx="10" fill="#1f7ad4"/>
+    <text x="245" y="298" class="pt">Research agent</text>
+    <text x="245" y="320" class="ty">ingests web / docs</text>
+    <rect x="170" y="338" width="150" height="22" rx="11" fill="#fef3c7"/>
+    <text x="245" y="353" class="tag" fill="#b45309">UNTRUSTED content in</text>
+  </g>
+  <g>
+    <rect x="440" y="250" width="300" height="120" rx="10" fill="#1f7ad4"/>
+    <text x="590" y="298" class="pt">Analytics agent</text>
+    <text x="590" y="320" class="ty">reads the customer database</text>
+    <rect x="515" y="338" width="150" height="22" rx="11" fill="#dbeafe"/>
+    <text x="590" y="353" class="tag" fill="#1d4ed8">PRIVATE data</text>
+  </g>
+  <g>
+    <rect x="785" y="250" width="300" height="120" rx="10" fill="#1f7ad4"/>
+    <text x="935" y="298" class="pt">Comms agent</text>
+    <text x="935" y="320" class="ty">sends email / Slack</text>
+    <rect x="860" y="338" width="150" height="22" rx="11" fill="#dcfce7"/>
+    <text x="935" y="353" class="tag" fill="#047857">EXTERNAL send out</text>
+  </g>
+
+  <!-- shared memory bus -->
+  <line x1="245" y1="370" x2="245" y2="556" class="conn" marker-end="url(#a)"/>
+  <line x1="590" y1="370" x2="590" y2="556" class="conn" marker-end="url(#a)"/>
+  <line x1="935" y1="370" x2="935" y2="556" class="conn" marker-end="url(#a)"/>
+  <rect x="95" y="558" width="990" height="62" rx="10" fill="#e2e8f0"/>
+  <text x="590" y="586" class="mem">Shared memory / blackboard</text>
+  <text x="590" y="606" class="sub" text-anchor="middle">every agent reads &amp; writes — an implicit edge no per-agent review sees</text>
+
+  <!-- RED cross-agent exfiltration path -->
+  <!-- entry -->
+  <rect x="6" y="285" width="80" height="50" rx="8" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="46" y="307" class="chip">poisoned</text>
+  <text x="46" y="323" class="chip">doc</text>
+  <line x1="86" y1="310" x2="95" y2="310" class="red" marker-end="url(#ared)"/>
+  <!-- research -> memory (deposits injected directive) -->
+  <path d="M210 370 L210 558" class="red" marker-end="url(#ared)"/>
+  <text x="120" y="470" class="redt">① inject via</text>
+  <text x="120" y="486" class="redt">shared memory</text>
+  <!-- memory -> analytics (reads directive, reads PII) -->
+  <path d="M555 558 L555 372" class="red" marker-end="url(#ared)"/>
+  <text x="600" y="470" class="redt">② read PII</text>
+  <!-- analytics -> memory (writes PII) ... memory -> comms (reads PII) -->
+  <path d="M900 372 L900 558" class="red" marker-end="url(#ared)"/>
+  <text x="945" y="470" class="redt">③ hand off</text>
+  <text x="945" y="486" class="redt">to comms</text>
+  <!-- comms -> external -->
+  <rect x="1094" y="285" width="80" height="50" rx="8" fill="#fee2e2" stroke="#dc2626"/>
+  <text x="1134" y="307" class="chip">attacker</text>
+  <text x="1134" y="323" class="chip">inbox</text>
+  <line x1="1085" y1="310" x2="1094" y2="310" class="red" marker-end="url(#ared)"/>
+
+  <text x="590" y="700" text-anchor="middle" class="sub">No single agent holds all three legs. The <tspan fill="#dc2626" font-weight="700">system</tspan> does — through the messages and shared memory between agents.</text>
+</svg>

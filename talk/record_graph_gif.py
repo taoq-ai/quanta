@@ -1,11 +1,11 @@
-"""Record the real ZIRAN interactive graph (vis-network) as an animated GIF.
+"""Record the real Ziran interactive graph (vis-network) as an animated GIF.
 
-Loads the generated HTML report, lets the physics settle, then does a slow
-focus-zoom onto the critical `search_database -> send_email_report` exfiltration
-edge and back out — capturing frames and encoding them with Pillow.
+Keeps the whole graph in frame the entire time and tours the attack paths using
+the report's own ``highlightPath`` — each dangerous path lights up red while the
+rest dims — then resets. No disorienting zoom; the motion is the highlight.
 
-The first frame is the settled full graph, so the GIF still reads well as a
-static image (e.g. if the deck is exported to PDF).
+The first frame is the full settled graph, so the GIF still reads as a static
+image (e.g. if the deck is exported to PDF).
 
     uv run --project /path/to/ziran python talk/record_graph_gif.py
 
@@ -25,7 +25,6 @@ ROOT = Path(__file__).resolve().parent.parent
 REPORT = ROOT / "reports" / "quanta_scan_report.html"
 OUT = ROOT / "talk" / "assets" / "ziran_graph.gif"
 
-CRITICAL_NODE = "send_email_report"  # the exfiltration sink — zoom target
 W, H = 1200, 720
 
 
@@ -44,10 +43,13 @@ def main() -> None:
         page.goto(REPORT.resolve().as_uri())
         page.wait_for_selector("#graph-canvas canvas", timeout=15000)
 
-        # Let physics stabilise, then fit the whole graph.
+        # Settle physics, then frame the whole graph and pin it there.
         time.sleep(3.0)
-        page.evaluate("() => { try { network.fit({animation:false}); } catch(e){} }")
-        time.sleep(0.6)
+        page.evaluate(
+            "() => { try { network.setOptions({physics:false});"
+            " network.fit({animation:false}); } catch(e){} }"
+        )
+        time.sleep(0.5)
 
         box = page.eval_on_selector(
             "#graph-canvas",
@@ -56,48 +58,51 @@ def main() -> None:
         )
         clip = {"x": box["x"], "y": box["y"], "width": box["width"], "height": box["height"]}
 
-        # Zoom is driven through the UI (mouse wheel) so it does not depend on the
-        # page's JS internals. vis-network zooms toward the cursor — park it over
-        # the critical search_database -> send_email_report region (lower-centre).
-        tx = box["x"] + box["width"] * 0.45
-        ty = box["y"] + box["height"] * 0.60
-        page.mouse.move(tx, ty)
+        # highlightPath(i) dims everything and reds the path, then zooms to it —
+        # we immediately fit() back so the FULL graph stays visible with the path lit.
+        def hold(n: int, delay: float = 0.12) -> None:
+            for _ in range(n):
+                frames.append(_frame(page, clip))
+                time.sleep(delay)
 
-        # 1) hold the settled full graph (good first frame)
-        for _ in range(5):
-            frames.append(_frame(page, clip))
-            time.sleep(0.08)
+        def show_path(i: int) -> None:
+            page.evaluate(
+                "(i) => { try { highlightPath(i); network.fit({animation:false}); } catch(e){} }", i
+            )
+            time.sleep(0.15)
 
-        # 2) zoom IN toward the exfiltration edge
-        for _ in range(12):
-            page.mouse.wheel(0, -110)
-            time.sleep(0.05)
-            frames.append(_frame(page, clip))
+        def reset() -> None:
+            page.evaluate(
+                "() => { try { resetHighlight(); network.fit({animation:false}); } catch(e){} }"
+            )
+            time.sleep(0.15)
 
-        # 3) hold on the critical edge
-        for _ in range(5):
-            frames.append(_frame(page, clip))
-            time.sleep(0.1)
+        # 1) full graph (good first frame)
+        reset()
+        hold(7)
 
-        # 4) zoom back OUT to the full graph
-        for _ in range(12):
-            page.mouse.wheel(0, 110)
-            time.sleep(0.05)
-            frames.append(_frame(page, clip))
+        # 2) tour each attack path (search_database, send_email_report, run_analysis, ...)
+        for i in (0, 3, 1, 2):
+            show_path(i)
+            hold(6)
+
+        # 3) back to the full graph and hold
+        reset()
+        hold(7)
 
         browser.close()
 
-    # Downscale for size, encode looping GIF.
-    target_w = 900
+    # Downscale + encode a smooth looping GIF.
+    target_w = 940
     scaled = [
         f.resize((target_w, round(f.height * target_w / f.width)), Image.LANCZOS) for f in frames
     ]
-    quantized = [im.quantize(colors=128, method=Image.MEDIANCUT) for im in scaled]
+    quantized = [im.quantize(colors=160, method=Image.MEDIANCUT) for im in scaled]
     quantized[0].save(
         OUT,
         save_all=True,
         append_images=quantized[1:],
-        duration=110,
+        duration=320,
         loop=0,
         optimize=True,
         disposal=2,

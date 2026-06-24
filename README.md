@@ -44,8 +44,9 @@ breach and stacks **three** vulnerability classes on the same four tools:
 | 3 | Excessive agency / confused deputy | LLM06 / LLM08 |
 
 ```bash
-uv run python scripts/exploit_demo.py     # same agent, two policies, opposite outcomes
-uv run pytest tests/test_exploit.py       # the lesson as assertions
+# Offline & dependency-free — works on a bare checkout, no install needed:
+python scripts/demo.py exploit       # same agent, two policies, opposite outcomes
+uv run pytest tests/test_exploit.py  # the lesson as assertions
 ```
 
 A benign request — *"benchmark Q4 revenue and email me a summary"* — fetches a
@@ -78,22 +79,23 @@ quanta/
 
 ## Quickstart (local, no AWS)
 
-```bash
-pip install -e '.[data,dev]'
+One Python entry point — `scripts/demo.py` — drives the whole demo:
 
-# 1. Build the read-only analytics replica (real UCI dataset; --synthetic for offline)
+```bash
+# Build the read-only analytics replica (real UCI dataset; --synthetic for offline)
 quanta-load-data            # or: quanta-load-data --synthetic
 
-# 2. Run the assistant locally (deterministic stub — no Bedrock needed)
-QUANTA_STUB=1 PYTHONPATH=. python scripts/run_local.py
+# The whole demo: ask the agent → scan with ZIRAN → exploit + fix
+python scripts/demo.py                 # --pause to step through it on stage
 
-# 3. Scan it with ZIRAN — see the composition finding + interactive report
-QUANTA_STUB=1 PYTHONPATH=. python scripts/scan_quanta.py --out reports
-open reports/*.html
-
-# 4. Watch the composition get exploited, then blocked by the hardened policy
-python scripts/exploit_demo.py
+# …or each part on its own:
+python scripts/demo.py ask             # 3 analytics questions (offline stub, no install)
+python scripts/demo.py scan            # run ZIRAN + open the report (installs ZIRAN if missing)
+python scripts/demo.py exploit         # the breach, then the hardened fix (offline)
 ```
+
+`ask` and `exploit` run on a bare checkout (no dependencies). `scan` needs
+ZIRAN and installs it for you (`--no-install` falls back to the bundled report).
 
 ## Deploy for real (Amazon Bedrock AgentCore)
 
@@ -122,8 +124,8 @@ then `agentcore launch` + a smoke `agentcore invoke` run automatically.
 ```bash
 pip install -e '.[agentcore]'
 export AGENTCORE_EXECUTION_ROLE_ARN=<ExecutionRoleArn from the bootstrap stack>
-./scripts/deploy.sh          # agentcore configure + launch (CodeBuild build)
-./scripts/invoke_demo.sh     # prove it's a real, working assistant
+python scripts/demo.py deploy            # agentcore configure + launch (CodeBuild build)
+python scripts/demo.py ask --cloud       # prove it's a real, working assistant
 ```
 
 The ZIRAN scan runs **in-process**, so the live demo never depends on the
