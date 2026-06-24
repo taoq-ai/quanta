@@ -37,7 +37,93 @@ CREATE TABLE invoices (
 CREATE INDEX idx_country ON invoices(country);
 CREATE INDEX idx_customer ON invoices(customer_id);
 CREATE INDEX idx_month ON invoices(month);
+
+-- Customer dimension. The UCI dataset has only numeric Customer IDs, so names
+-- and emails are synthesised (deterministically) to make per-customer results
+-- meaningful — and the customer-level export realistic PII for the demo.
+CREATE TABLE customers (
+    customer_id TEXT PRIMARY KEY,
+    name        TEXT,
+    email       TEXT,
+    country     TEXT
+);
 """
+
+# ascii-only name pools so generated emails stay clean.
+_FIRST = [
+    "Alice",
+    "Bob",
+    "Carol",
+    "David",
+    "Emma",
+    "Frank",
+    "Grace",
+    "Hugo",
+    "Iris",
+    "Jack",
+    "Karen",
+    "Leo",
+    "Mia",
+    "Noah",
+    "Olivia",
+    "Pieter",
+    "Quinn",
+    "Rosa",
+    "Sam",
+    "Tessa",
+    "Umar",
+    "Vera",
+    "Wout",
+    "Xander",
+    "Yara",
+    "Zoe",
+]
+_LAST = [
+    "Chen",
+    "Marsh",
+    "Diaz",
+    "Kowalski",
+    "Okonkwo",
+    "Mueller",
+    "Dubois",
+    "Rossi",
+    "Nakamura",
+    "Andersen",
+    "Silva",
+    "Novak",
+    "Haddad",
+    "Visser",
+    "Ivanova",
+    "Costa",
+    "Bauer",
+    "Lefebvre",
+    "Romano",
+    "Yilmaz",
+]
+
+
+def _fake_customer(customer_id: str) -> tuple[str, str]:
+    """Deterministic fake name + email for a customer id (UCI has neither)."""
+    digits = "".join(ch for ch in customer_id if ch.isdigit()) or "0"
+    n = int(digits)
+    # prime multipliers so adjacent ids get visibly different names
+    first = _FIRST[(n * 7) % len(_FIRST)]
+    last = _LAST[(n * 13) % len(_LAST)]
+    email = f"{first.lower()}.{last.lower()}.{digits[-4:]}@acme-retail.example"
+    return f"{first} {last}", email
+
+
+def _build_customers(conn: sqlite3.Connection) -> None:
+    """Populate the customers dimension from the invoices already inserted."""
+    cur = conn.execute(
+        "SELECT customer_id, country FROM invoices WHERE customer_id <> '' GROUP BY customer_id"
+    )
+    rows = [(cid, *_fake_customer(cid), country) for cid, country in cur.fetchall()]
+    conn.executemany(
+        "INSERT OR REPLACE INTO customers (customer_id, name, email, country) VALUES (?,?,?,?)",
+        rows,
+    )
+    conn.commit()
 
 
 def _create_db(db_path: Path) -> sqlite3.Connection:
@@ -95,6 +181,7 @@ def load_real(db_path: Path, row_cap: int | None) -> int:
         for r in df.itertuples(index=False)
     ]
     _insert(conn, rows)
+    _build_customers(conn)
     conn.close()
     return len(rows)
 
@@ -142,10 +229,15 @@ def load_synthetic(db_path: Path, n: int = 5000) -> int:
         qty = 1 + (i % 12)
         month = f"2010-{1 + (i % 12):02d}"
         date = f"{month}-{1 + (i % 27):02d} 1{i % 2}:30:00"
-        customer = f"{12000 + (i % 900)}"  # ~900 customers — customer-level PII
+        # Skew so a few "power" customers place many orders (squared uniform
+        # biases toward low indices) — gives a real top-customers ranking
+        # instead of everyone tied. ~400 distinct customers.
+        u = ((i * 2654435761) % 100000) / 100000.0
+        customer = f"{12000 + int(u * u * 400)}"  # customer-level PII
         invoice = f"5{36000 + (i % 4000)}"
         rows.append((invoice, stock, desc, qty, date, price, customer, country, month))
     _insert(conn, rows)
+    _build_customers(conn)
     conn.close()
     return len(rows)
 

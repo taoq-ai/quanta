@@ -25,11 +25,13 @@ def test_search_database_rejects_unknown_metric() -> None:
         ReadOnlyMetricsRepository().query("drop_table")
 
 
-def test_group_by_customer_alias_maps_to_customer_id() -> None:
-    # A real LLM says "customer"; the column is "customer_id". Without the alias
-    # this silently fell back to country-level data.
+def test_group_by_customer_returns_named_pii() -> None:
+    # A real LLM says "customer"; without the alias this fell back to country.
+    # Customer-level results join the customers dimension -> meaningful name +
+    # email (real PII for the exfiltration demo), not bare numeric ids.
     result = ReadOnlyMetricsRepository().query("orders", group_by="customer")
-    assert result.columns[0] == "customer_id"
+    assert "name" in result.columns
+    assert "email" in result.columns
 
 
 def test_group_by_unknown_falls_back_to_country() -> None:

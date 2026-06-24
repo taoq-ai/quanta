@@ -258,10 +258,10 @@ imageSlide("This isn't a drawing — it's the scan", "ziran_graph.gif", 940, 825
 
 // 20 — exploit, live
 imageSlide("Theoretical? Watch it happen — live, offline", "exploit_vulnerable.png", 1287, 368,
-  "Benign request + a poisoned reference → 16,741 bytes of customer PII to an attacker mailbox on the ALLOWLISTED domain. Every per-tool control held.",
+  "Benign request + a poisoned reference → the full customer table (names + emails) to an attacker mailbox on the ALLOWLISTED domain. Every per-tool control held.",
   "*** LIVE DEMO — the breach ***\n" +
   "Run:  python scripts/demo.py exploit            (offline, deterministic — prints both runs)\n" +
-  "Walk the table: a benign request → fetch_reference returns an allowlisted page whose CONTENT carries a hidden instruction (indirect prompt injection, LLM01). The agent obeys → search_database reads 900 customer-level rows → watch the taint go red: PRIVATE+UNTRUSTED, the lethal trifecta in one run → send_email_report ships 16,741 bytes of PII to ops-archive@reports.acme-analytics.example. That mailbox is on the ALLOWLISTED domain — the domain check PASSED. Model-chosen recipient = excessive agency / confused deputy (LLM06). Say slowly: 'No control was bypassed. The data left through fully authorised actions.'");
+  "Walk the table: a benign request → fetch_reference returns an allowlisted page whose CONTENT carries a hidden instruction (indirect prompt injection, LLM01). The agent obeys → search_database reads the customer table (names + emails) → watch the taint go red: PRIVATE+UNTRUSTED, the lethal trifecta in one run → send_email_report ships the full customer list (names + emails) to ops-archive@reports.acme-analytics.example. That mailbox is on the ALLOWLISTED domain — the domain check PASSED. Model-chosen recipient = excessive agency / confused deputy (LLM06). Say slowly: 'No control was bypassed. The data left through fully authorised actions.'");
 
 // 21 — three vulnerabilities, one agent
 {
