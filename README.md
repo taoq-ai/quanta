@@ -95,7 +95,17 @@ python scripts/demo.py exploit         # the breach, then the hardened fix (offl
 ```
 
 `ask` and `exploit` run on a bare checkout (no dependencies). `scan` needs
-ZIRAN and installs it for you (`--no-install` falls back to the bundled report).
+Ziran and installs it for you (`--no-install` falls back to the bundled report).
+
+### Three ways to run the agent
+
+| Mode | Command | Needs |
+|---|---|---|
+| **Offline stub** (default) | `python scripts/demo.py ask` | nothing — deterministic, no AWS |
+| **Online, local** | `python scripts/demo.py ask --online` | `pip install -e '.[agentcore]'` + AWS creds + Bedrock access (real Claude, **in-process, no deploy**) |
+| **Cloud (deployed)** | `python scripts/demo.py deploy` then `ask --cloud` | a deployed AgentCore runtime (see below) |
+
+`--online` runs the real Strands + Bedrock agent in your own process — the fastest way to see Quanta on a live model without deploying. The model id is region-aware (`quanta/config.py`): EU regions use the EU Claude cross-region profile, so set `export AWS_REGION=eu-west-1` for PostNL.
 
 ## Deploy for real (Amazon Bedrock AgentCore)
 

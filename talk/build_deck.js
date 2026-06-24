@@ -180,7 +180,8 @@ imageSlide("…and notice it's well-built", "architecture.png", 1100, 660,
     "*** LIVE DEMO — Part 1: it's a real agent ***\n" +
     "Run:  python scripts/demo.py --pause          (whole demo: ask -> scan -> exploit)\n" +
     "  or just this part:  python scripts/demo.py ask              (offline stub)\n" +
-    "  on the deployed agent:  python scripts/demo.py ask --cloud  (real AgentCore)\n" +
+    "  real Bedrock, local (no deploy):  python scripts/demo.py ask --online\n" +
+    "  the deployed agent:  python scripts/demo.py ask --cloud\n" +
     "It asks three real questions (revenue by country top 5 / orders per country / top customers).\n" +
     "Real numbers from UCI Online Retail II. Then say: 'Real agent, real data, genuinely useful. Now — is it safe?'");
 }
