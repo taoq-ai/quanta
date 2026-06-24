@@ -106,10 +106,13 @@ def do_ask(questions: list[str], *, cloud: bool = False, online: bool = False) -
         try:
             import strands  # noqa: F401
         except ImportError:
-            print(_c("33", "   --online needs the agentcore extra and AWS credentials:"))
-            print("     pip install -e '.[agentcore]'")
-            print("     aws sso login   (or export AWS_* keys)   ·   export AWS_REGION=eu-west-1")
-            print("   then re-run.  (Drop --online to use the offline stub.)")
+            print(_c("33", "   --online needs the agentcore extra + AWS credentials. Easiest:"))
+            print("     uv run --extra agentcore python scripts/demo.py ask --online")
+            print("   (or install it once:  uv pip install -e '.[agentcore]')")
+            print(
+                "   AWS:  aws sso login --profile <profile>   ·   export AWS_PROFILE / AWS_REGION"
+            )
+            print("   (Drop --online to use the offline stub.)")
             return
         label = "quanta agent (Bedrock, local)"
     else:
@@ -210,13 +213,23 @@ def do_deploy() -> None:
 # ── cli ──────────────────────────────────────────────────────────────────────
 def main() -> None:
     global PAUSE
-    parser = argparse.ArgumentParser(
-        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    # --pause on a shared parent so it works before OR after the subcommand
+    # (SUPPRESS so an absent subparser copy doesn't clobber a value set earlier).
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument(
+        "--pause",
+        action="store_true",
+        default=argparse.SUPPRESS,
+        help="wait for <enter> between steps",
     )
-    parser.add_argument("--pause", action="store_true", help="wait for <enter> between steps")
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        parents=[common],
+    )
     sub = parser.add_subparsers(dest="cmd")
 
-    pa = sub.add_parser("ask", help="run the analytics questions")
+    pa = sub.add_parser("ask", parents=[common], help="run the analytics questions")
     pa.add_argument("questions", nargs="*")
     pa_mode = pa.add_mutually_exclusive_group()
     pa_mode.add_argument("--cloud", action="store_true", help="the deployed AgentCore agent")
@@ -226,20 +239,20 @@ def main() -> None:
         help="real Strands+Bedrock, in-process (needs .[agentcore] + AWS creds)",
     )
 
-    ps = sub.add_parser("scan", help="run Ziran and open the report")
+    ps = sub.add_parser("scan", parents=[common], help="run Ziran and open the report")
     ps.add_argument("--out", type=Path, default=ROOT / "reports")
     ps.add_argument("--no-install", action="store_true", help="don't auto-install Ziran")
 
-    sub.add_parser("exploit", help="run the breach + hardened fix")
-    sub.add_parser("deploy", help="deploy to Amazon Bedrock AgentCore")
-    pall = sub.add_parser("all", help="ask -> scan -> exploit (default)")
+    sub.add_parser("exploit", parents=[common], help="run the breach + hardened fix")
+    sub.add_parser("deploy", parents=[common], help="deploy to Amazon Bedrock AgentCore")
+    pall = sub.add_parser("all", parents=[common], help="ask -> scan -> exploit (default)")
     pall_mode = pall.add_mutually_exclusive_group()
     pall_mode.add_argument("--cloud", action="store_true")
     pall_mode.add_argument("--online", action="store_true")
     pall.add_argument("--no-install", action="store_true")
 
     args = parser.parse_args()
-    PAUSE = args.pause
+    PAUSE = getattr(args, "pause", False)
 
     cmd = args.cmd or "all"
     if cmd == "ask":
