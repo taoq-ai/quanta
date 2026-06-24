@@ -38,3 +38,6 @@ talk/*.pdf
 
 # transient timestamped scan artifacts (canonical frozen report is committed)
 reports/campaign_*
+
+# event-specific session-feedback QR — lives in the private quanta-talk-postnl repo
+docs/session-feedback-qr.png
