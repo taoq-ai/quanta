@@ -59,7 +59,10 @@ function imageSlide(title, img, natW, natH, caption, notes) {
   s.addText("When Your Agent Tools\nCombine Against You", { x: 0.8, y: 2.0, w: 11.7, h: 2.6, fontFace: HEAD, fontSize: 52, color: WHITE, bold: true, lineSpacingMultiple: 1.03 });
   s.addText("The vulnerability lives in the graph, not in any node.", { x: 0.82, y: 4.75, w: 11, h: 0.6, fontFace: BODY, fontSize: 22, color: "818CF8", italic: true });
   s.addText("Live demo: a real Amazon Bedrock AgentCore agent, found with Ziran", { x: 0.82, y: 5.7, w: 11, h: 0.5, fontFace: BODY, fontSize: 16, color: "94A3B8" });
-  s.addNotes("Land the title, then a beat. 'By the end you'll have watched a clean, well-architected agent get one critical finding — and the finding isn't in any of its tools.' Audience: builders/engineers. 45 min: ~30 talk + ~10 demo + ~5 Q&A.");
+  s.addNotes(
+    "SAY: 'By the end, you'll have watched a clean, well-built agent get one critical finding — and it isn't in any of its tools.'\n" +
+    "· Land the title. Pause. Let it sit.\n" +
+    "· 45 min — about 30 talk, 10 demo, 5 Q&A.");
 }
 
 // 2 — cold open
@@ -67,7 +70,10 @@ function imageSlide(title, img, natW, natH, caption, notes) {
   const s = p.addSlide();
   darkTitle(s, "The part everyone is already looking at", "Everyone watches the prompt.",
     "Jailbreaks, injection, guardrails — real, and well-guarded. I want the risk nobody's looking at, because it isn't visible from where they're standing.");
-  s.addNotes("Most AI-security energy goes at the prompt: jailbreaks, injection, guardrails. It matters — but it's the part everyone is already looking at. Say: 'I want the risk nobody's looking at, because it isn't visible from where they're standing.'");
+  s.addNotes(
+    "SAY: 'Everyone watches the prompt — jailbreaks, injection, guardrails. That's real, and it's well guarded.'\n" +
+    "· Then: 'I want the risk nobody's looking at — because you can't see it from there.'\n" +
+    "→ so where do you look instead?");
 }
 
 // 3 — tools are a graph
@@ -85,11 +91,16 @@ function imageSlide(title, img, natW, natH, caption, notes) {
   s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 4.5, w: 11.93, h: 1.9, fill: { color: INDIGOL }, line: { color: INDIGO, width: 1 }, rectRadius: 0.12 });
   s.addText("The whole talk turns on this: review one tool at a time and the dangerous combination is invisible — it isn't in any single tool.",
     { x: 1.1, y: 4.5, w: 11.1, h: 1.9, valign: "middle", fontFace: HEAD, fontSize: 22, color: INDIGO, bold: true, lineSpacingMultiple: 1.1 });
-  s.addNotes("A security review enumerates tools like API endpoints: a list. But an LLM agent can call any tool, then feed its output into the next. That's not a list — it's a graph of what the agent can do next. Hold this idea; the whole talk turns on it.");
+  s.addNotes(
+    "SAY: 'A review sees a list of tools. An agent sees a graph.'\n" +
+    "· A review checks each tool on its own — like endpoints on a form.\n" +
+    "· But an agent calls one tool, then feeds its output into the next.\n" +
+    "· That's a graph: what it can do NEXT.\n" +
+    "· The whole talk turns on this. One tool at a time, the dangerous combo is invisible.");
 }
 
 // 4 — section 1
-{ const s = p.addSlide(); section(s, "1", "How an attacker navigates an agent", "Forget the model for a minute. Think like someone who just got access."); s.addNotes("Divider. 'Forget the model for a minute. Think like someone who just got access to the agent.'"); }
+{ const s = p.addSlide(); section(s, "1", "How an attacker navigates an agent", "Forget the model for a minute. Think like someone who just got access."); s.addNotes("SAY: 'Forget the model for a minute. Think like someone who just got access to the agent.'"); }
 
 // 5 — attacker mental model
 {
@@ -109,13 +120,21 @@ function imageSlide(title, img, natW, natH, caption, notes) {
     y += 1.25;
   });
   s.addText("This is graph traversal — done by hand. Ziran does it automatically.", { x: 0.8, y: 6.2, w: 11.8, h: 0.6, fontFace: BODY, fontSize: 17, italic: true, color: MUTE });
-  s.addNotes("Three moves: recon (what tools exist?), capability mapping (what does each touch — data? network? compute?), chaining (which sequence turns reasonable actions into one bad outcome?). Attackers don't look for A dangerous tool. They look for a PATH. This is graph traversal, done by hand.");
+  s.addNotes(
+    "SAY: 'An attacker doesn't hunt for one bad tool. They hunt for a path.'\n" +
+    "· Recon — what tools are here?\n" +
+    "· Mapping — what does each one touch? Data, network, code?\n" +
+    "· Chaining — which order turns safe steps into one bad outcome?\n" +
+    "· That's walking the graph by hand. Ziran does it automatically.");
 }
 
 // 6 — lethal trifecta
 imageSlide("The lethal trifecta", "lethal-trifecta.png", 1000, 660,
   "Private data + untrusted content + external comms in one agent. (Framing: Simon Willison.)",
-  "Three capabilities individually fine and collectively lethal: access to private data, exposure to untrusted content, the ability to communicate externally. Any agent with all three can be steered to read secrets and send them out — through entirely authorised actions. Credit Simon Willison's 'lethal trifecta'.");
+  "SAY: 'Three powers, each fine on its own, deadly together.'\n" +
+  "· Private data. Untrusted content. The ability to send out.\n" +
+  "· Any agent with all three can be steered to read secrets and send them — all through allowed actions.\n" +
+  "· The name is Simon Willison's: the lethal trifecta.");
 
 // 7 — two failure shapes
 {
@@ -140,26 +159,39 @@ imageSlide("The lethal trifecta", "lethal-trifecta.png", 1000, 660,
     { text: "Search + code execution + network access isn't three productivity features. It's an RCE surface.", options: {} },
   ], "FFF7ED", "B45309");
   s.addText("Neither is a bug in a node. Both are properties of the graph.", { x: 0.7, y: 6.55, w: 11.9, h: 0.5, align: "center", fontFace: HEAD, fontSize: 18, color: INK, bold: true });
-  s.addNotes("Same structural idea, two shapes. Exfiltration: read + send. RCE surface: fetch untrusted + execute + network. Neither is a bug in a node. Both are properties of the graph. (Our demo focuses on exfiltration — the subtler, more relatable one.)");
+  s.addNotes(
+    "SAY: 'Same shape, two outcomes.'\n" +
+    "· Exfiltration: read private, then send out.\n" +
+    "· RCE: fetch untrusted, run code, reach the network.\n" +
+    "· Neither is a bug in one tool. Both live in the graph.\n" +
+    "· We'll focus on exfiltration — the more relatable one.");
 }
 
 // 8 — why reviews miss it
 imageSlide("Why most reviews can't catch it", "review-blindness.png", 1100, 560,
   "Tool-by-tool, everything passes. The composition stays invisible — until someone connects the dots.",
-  "Reviews look tool-by-tool, endpoint-by-endpoint — and tool-by-tool, everything passes. The composition is invisible from that vantage point. Say: 'It stays invisible until someone connects the dots. The only question is whether that someone works for you.'");
+  "SAY: 'Tool by tool, everything passes. The dangerous combination stays invisible.'\n" +
+  "· A review looks one endpoint at a time — and from there, the path can't be seen.\n" +
+  "· 'It stays invisible until someone connects the dots. The only question is whether that someone works for you.'");
 
 // 9 — section 2
-{ const s = p.addSlide(); section(s, "2", "Meet the target", "An agent I built. Try to find the problem while I describe it."); s.addNotes("Divider. 'Let me show you an agent I built — and I want you to try to find the problem while I describe it.'"); }
+{ const s = p.addSlide(); section(s, "2", "Meet the target", "An agent I built. Try to find the problem while I describe it."); s.addNotes("SAY: 'Let me show you an agent I built — and try to spot the problem while I describe it.'"); }
 
 // 10 — C4 solution design
 imageSlide("Quanta — the solution design (C4)", "c4-container.png", 1180, 800,
   "Analyst → AgentCore runtime (Strands + Claude) → four tools → read-only replica, allowlisted (untrusted) reference, audited mail.",
-  "Solution design, C4 container view. A real, sensible architecture: the analyst talks to the Quanta AgentCore runtime; a Strands agent backed by Bedrock Claude sequences four tool containers; those reach a read-only analytics replica, allowlisted external reference sources, and an audited mail relay. Point at the trust tags along the bottom: PRIVATE data in, UNTRUSTED content in, EXTERNAL send out — all three legs present in one runtime. Nothing here looks wrong yet.");
+  "SAY: 'This is the design. A normal, sensible architecture.'\n" +
+  "· The analyst talks to the agent; it sequences four tools.\n" +
+  "· They reach a read-only database, outside reference sources, and an audited mail relay.\n" +
+  "· Point at the tags along the bottom: PRIVATE in, UNTRUSTED in, EXTERNAL out — all three in one agent.\n" +
+  "· 'Nothing here looks wrong yet.'");
 
 // 11 — quanta architecture (controls)
 imageSlide("…and notice it's well-built", "architecture.png", 1100, 660,
   "Hexagonal. Read-only replica, parameterised queries, sandboxed compute, egress allowlist, audited delivery. This passes review.",
-  "Zoom into the controls. Hexagonal, ports & adapters. Read-only replica, parameterised queries (no raw SQL), a sandboxed interpreter with no network, an egress allowlist on outbound fetches, audited report delivery. Say: 'This is not a toy. Every box here is something you'd sign off on. No unsandboxed eval, no raw SQL, no open egress.'");
+  "SAY: 'And notice — it's well built. Every box here is something you'd sign off on.'\n" +
+  "· Read-only database, no raw SQL, sandboxed compute with no network, an allowlist on outbound fetches, audited mail.\n" +
+  "· 'This is not a toy. No open eval, no raw SQL, no open egress.'");
 
 // 12 — quanta live
 {
@@ -177,13 +209,14 @@ imageSlide("…and notice it's well-built", "architecture.png", 1100, 660,
   s.addText("Real agent, real data, genuinely useful. Now — is it safe?",
     { x: 0.7, y: 5.8, w: 11.9, h: 0.7, fontFace: HEAD, fontSize: 22, color: INK, bold: true });
   s.addNotes(
-    "*** LIVE DEMO — Part 1: it's a real agent ***\n" +
-    "Run:  python scripts/demo.py --pause          (whole demo: ask -> scan -> exploit)\n" +
-    "  or just this part:  python scripts/demo.py ask              (offline stub)\n" +
-    "  real Bedrock, local (no deploy):  python scripts/demo.py ask --online\n" +
-    "  the deployed agent:  python scripts/demo.py ask --cloud\n" +
-    "It asks three real questions (revenue by country top 5 / orders per country / top customers).\n" +
-    "Real numbers from UCI Online Retail II. Then say: 'Real agent, real data, genuinely useful. Now — is it safe?'");
+    "*** LIVE DEMO — Part 1: it's a real agent ***\n\n" +
+    "Run:  python scripts/demo.py --pause        (whole demo: ask -> scan -> exploit)\n" +
+    "  just this part:           ask\n" +
+    "  real Bedrock, no deploy:  ask --online\n" +
+    "  the deployed agent:       ask --cloud\n\n" +
+    "· Three real questions: revenue by country, orders per country, top customers.\n" +
+    "· Real numbers from the public UCI retail dataset.\n" +
+    "SAY: 'Real agent, real data, genuinely useful. Now — is it safe?'");
 }
 
 // 13 — four tools four controls
@@ -208,11 +241,17 @@ imageSlide("…and notice it's well-built", "architecture.png", 1100, 660,
   s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 6.35, w: 11.93, h: 0.85, fill: { color: "ECFDF5" }, line: { color: GREEN, width: 1 }, rectRadius: 0.1 });
   s.addText("A tool-by-tool review signs off — 4 / 4 approved. Hold that thought.",
     { x: 1.0, y: 6.35, w: 11.3, h: 0.85, valign: "middle", fontFace: HEAD, fontSize: 19, color: "065F46", bold: true });
-  s.addNotes("Four tools. Four real controls: search_database (read-only, parameterised), run_analysis (sandboxed), fetch_reference (allowlist), send_email_report (allowlist + audit + dry-run). A tool-by-tool review signs off 4 out of 4. Hold that thought.");
+  s.addNotes(
+    "SAY: 'Four tools. Each with a real control.'\n" +
+    "· search_database — read-only, no raw SQL.\n" +
+    "· run_analysis — sandboxed, no network.\n" +
+    "· fetch_reference — egress allowlist.\n" +
+    "· send_email_report — domain allowlist, audit, dry-run.\n" +
+    "· 'Reviewed one at a time, it's 4 out of 4 approved. Hold that thought.'");
 }
 
 // 14 — section 3
-{ const s = p.addSlide(); section(s, "3", "Live — find the composition", "Stop reviewing tools one at a time. Look at what they do together."); s.addNotes("Divider. 'Instead of reviewing tools one at a time, let's look at what they can do together.'"); }
+{ const s = p.addSlide(); section(s, "3", "Live — find the composition", "Stop reviewing tools one at a time. Look at what they do together."); s.addNotes("SAY: 'Instead of reviewing tools one at a time, let's look at what they can do together.'"); }
 
 // 15 — what ziran does
 {
@@ -231,37 +270,53 @@ imageSlide("…and notice it's well-built", "architecture.png", 1100, 660,
     s.addText(d, { x, y: 4.5, w: 3.7, h: 0.6, align: "center", fontFace: "Courier New", fontSize: 18, color: SLATE });
   });
   s.addText("Here it isn't testing prompts. It's reasoning about structure.", { x: 0.7, y: 5.7, w: 11.9, h: 0.6, fontFace: BODY, fontSize: 18, italic: true, color: MUTE });
-  s.addNotes("Ziran builds the agent's capability graph and checks it against a library of known dangerous compositions — direct (A→B), indirect (A→…→B), and cycles. Say: 'It's not testing prompts here. It's reasoning about structure.'");
+  s.addNotes(
+    "SAY: 'Ziran builds the agent's capability graph — every tool, and every way one tool's output can flow into another.'\n" +
+    "· Then it checks that graph for known-dangerous combinations: direct, indirect, and loops.\n" +
+    "· 'It's not testing prompts here. It's reasoning about structure.'");
 }
 
 // 16 — graph evolution
 imageSlide("The graph, in three steps", "graph-evolution.png", 1200, 460,
   "Four approved tools → the agent can sequence them → one path is an exit.",
-  "Walk the three panels: four approved tools → the agent can sequence them (edges) → one path is an exit. Say: 'Nothing here is hypothetical. An LLM agent really can call send right after search.'");
+  "SAY (walk the three panels): 'Four approved tools → the agent can sequence them → one path is an exit.'\n" +
+  "· 'Nothing here is hypothetical. An agent really can call send right after search.'");
 
 // 17 — the reveal
 imageSlide("…and the composition is still critical", "architecture-overlay.png", 1100, 660,
   "Every control held. The path between them did not — and the agent can walk it.",
-  "Back to the architecture — now with the red path. Say slowly: 'Every control still holds. Read-only: held. Sandbox: held. Allowlists: held. And here's the path: untrusted content comes in through fetch_reference, the agent reads private data with search_database, and ships it out through send_email_report — every step authorised. Every box was hardened. The arrow wasn't.'");
+  "SAY slowly: 'Every control still holds. Read-only: held. Sandbox: held. Allowlists: held.'\n" +
+  "· 'And here's the path: untrusted content comes in, the agent reads private data, and ships it out — every step allowed.'\n" +
+  "· 'Every box was hardened. The arrow wasn't.'");
 
 // 18 — the real interactive graph (animated GIF)
 imageSlide("This isn't a drawing — it's the scan", "ziran_graph.gif", 940, 825,
   "The red node IS the finding: Ziran flags the composition statically, then confirms the live exfil dynamically.",
-  "*** LIVE DEMO — find the composition ***\n" +
-  "Run:  python scripts/demo.py scan   (installs the local Ziran if needed, then opens the report)\n" +
-  "It scans in-process and prints two beats — STATIC (the composition Ziran finds in the tool graph) and DYNAMIC (Ziran confirms the exfil from the observed tool calls) — then opens reports/*_report.html. Pan the graph, click the red node.\n" +
-  "(This slide embeds the real interactive graph as a looping GIF — it plays in Presenter/slideshow, and is the fallback if the live open stalls.)\n" +
-  "STATIC: 'I didn't tell Ziran this was dangerous — that critical verdict is from its built-in composition patterns. I gave it a graph; it handed me the exit.' DYNAMIC: 'and it's not theoretical — Ziran confirms the exfil from the observed tool calls. Note what it does NOT do: it never flags the agent merely listing its tools. The finding is the composition, not a keyword.'");
+  "*** LIVE DEMO — find the composition ***\n\n" +
+  "Run:  python scripts/demo.py scan        (installs local Ziran if needed, opens the report)\n\n" +
+  "· It scans in-process and prints two beats:\n" +
+  "   STATIC  — the dangerous path Ziran finds in the tool graph.\n" +
+  "   DYNAMIC — Ziran confirms the real leak from the actual tool calls.\n" +
+  "· Then it opens the report. Pan the graph, click the red node.\n" +
+  "· (The slide has the real graph as a looping GIF — the fallback if the live open stalls.)\n\n" +
+  "SAY (static): 'I didn't tell Ziran this was dangerous. I gave it a graph; it handed me the exit.'\n" +
+  "SAY (dynamic): 'And it's not theoretical — it confirms the leak from the real tool calls. Notice what it does NOT flag: an agent just listing its tools. The finding is the composition, not a keyword.'");
 
 // 19 — section 4
-{ const s = p.addSlide(); section(s, "4", "From finding to breach — and back", "Ziran found the path. Now watch an attacker walk it — then watch us close it."); s.addNotes("Divider. 'Ziran found the path statically, before anyone attacked. Now let's walk it like an attacker — then close it.'"); }
+{ const s = p.addSlide(); section(s, "4", "From finding to breach — and back", "Ziran found the path. Now watch an attacker walk it — then watch us close it."); s.addNotes("SAY: 'Ziran found the path before anyone attacked. Now let's walk it like an attacker — then close it.'"); }
 
 // 20 — exploit, live
 imageSlide("Theoretical? Watch it happen — live, offline", "exploit_vulnerable.png", 1287, 368,
   "Benign request + a poisoned reference → the full customer table (names + emails) to an attacker mailbox on the ALLOWLISTED domain. Every per-tool control held.",
-  "*** LIVE DEMO — the breach ***\n" +
-  "Run:  python scripts/demo.py exploit            (offline, deterministic — prints both runs)\n" +
-  "Walk the table: a benign request → fetch_reference returns an allowlisted page whose CONTENT carries a hidden instruction (indirect prompt injection, LLM01). The agent obeys → search_database reads the customer table (names + emails) → watch the taint go red: PRIVATE+UNTRUSTED, the lethal trifecta in one run → send_email_report ships the full customer list (names + emails) to ops-archive@reports.acme-analytics.example. That mailbox is on the ALLOWLISTED domain — the domain check PASSED. Model-chosen recipient = excessive agency / confused deputy (LLM06). Say slowly: 'No control was bypassed. The data left through fully authorised actions.'");
+  "*** LIVE DEMO — the breach ***\n\n" +
+  "Run:  python scripts/demo.py exploit --vulnerable-only   (offline, deterministic)\n\n" +
+  "Walk the table:\n" +
+  "· A benign request → fetch_reference returns an allowlisted page with a hidden instruction (injection, LLM01).\n" +
+  "· The agent obeys → search_database reads the customer table (names + emails).\n" +
+  "· Watch the taint go red: PRIVATE + UNTRUSTED — the trifecta, in one run.\n" +
+  "· send_email_report ships the whole customer list to an attacker mailbox ON the allowlisted domain — the check passed.\n" +
+  "· The model picked the recipient = excessive agency (LLM06).\n\n" +
+  "SAY slowly: 'No control was bypassed. The data left through fully allowed actions.'");
 
 // 21 — three vulnerabilities, one agent
 {
@@ -284,15 +339,25 @@ imageSlide("Theoretical? Watch it happen — live, offline", "exploit_vulnerable
   s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 5.5, w: 11.93, h: 1.4, fill: { color: REDL }, line: { color: RED, width: 1 }, rectRadius: 0.1 });
   s.addText("The composition is the precondition — Ziran finds it before anyone is attacked. The injection is the trigger; the model-chosen recipient is the missing control. All three live on four review-passing tools.",
     { x: 1.05, y: 5.5, w: 11.2, h: 1.4, valign: "middle", fontFace: HEAD, fontSize: 17, color: "7F1D1D", bold: true, lineSpacingMultiple: 1.1 });
-  s.addNotes("Name what we just saw. One innocuous agent, three stacked classes: the composition (structural — Ziran finds it pre-attack), indirect prompt injection (LLM01 — the trigger), excessive agency / confused deputy (LLM06 — the missing control). None is a bug in a single tool.");
+  s.addNotes(
+    "SAY: 'Name what we just saw — one harmless-looking agent, three problems stacked.'\n" +
+    "· The composition — structural. Ziran finds it before any attack.\n" +
+    "· The injection — the trigger (LLM01).\n" +
+    "· The model-chosen recipient — the missing control (LLM06).\n" +
+    "· None of them is a bug in a single tool.");
 }
 
 // 22 — hardened, live
 imageSlide("Break the graph: the same attack, blocked", "exploit_hardened.png", 1287, 343,
   "One injected security policy. Injection refused as data; model-chosen recipient denied; the analyst's summary still goes out. Same agent, same payload.",
-  "*** LIVE DEMO — the fix ***\n" +
-  "`python scripts/demo.py exploit` already printed both runs — scroll to the second.\n" +
-  "Same agent, same payload, opposite outcome: the injected instruction is REFUSED as data (LLM01); the model-chosen recipient is DENIED by recipient-binding (LLM06); the trifecta gate stops a private+untrusted run reaching an external sink. Crucially the analyst's legitimate summary STILL goes out. Say: 'The fix didn't break the product. We broke the path, not the agent.'");
+  "*** LIVE DEMO — the fix ***\n\n" +
+  "Run:  python scripts/demo.py exploit --hardened-only   (or scroll to the 2nd run)\n\n" +
+  "· Same agent, same payload, opposite outcome:\n" +
+  "   - injected instruction REFUSED as data (LLM01)\n" +
+  "   - model-chosen recipient DENIED (LLM06)\n" +
+  "   - trifecta gate stops a private+untrusted run from sending out.\n" +
+  "· But the analyst's real summary STILL goes out.\n\n" +
+  "SAY: 'The fix didn't break the product. We broke the path, not the agent.'");
 
 // 23 — what actually breaks the path
 {
@@ -313,13 +378,23 @@ imageSlide("Break the graph: the same attack, blocked", "exploit_hardened.png", 
     s.addText(d, { x: 6.2, y, w: 6.2, h: 1.12, valign: "middle", fontFace: BODY, fontSize: 14, color: SLATE, lineSpacingMultiple: 1.05 });
     y += 1.22;
   });
-  s.addNotes("The fix is NOT 'remove a tool' — each is justified. Break the graph: no-instructions-from-data (LLM01), recipient binding (LLM06), trifecta gate via taint (the composition), and re-scan in CI (ziran ci fails the build when a new tool completes a trifecta). Three are runtime guardrails; the last is the design-time one that matches the thesis. It's all real, tested code in quanta/security/.");
+  s.addNotes(
+    "SAY: 'The fix isn't remove a tool — each one is justified. You break the graph.'\n" +
+    "· No instructions from data — fetched content can't issue commands (LLM01).\n" +
+    "· Recipient binding — mail only goes to the real requester (LLM06).\n" +
+    "· Trifecta gate — a private+untrusted run can't send out on its own. Aggregates aren't private, so the real task still works.\n" +
+    "· Re-scan in CI — fail the build when a new tool completes the trifecta.\n" +
+    "· It's all real, tested code in quanta/security/.");
 }
 
 // 24 — multi-agent: the distributed trifecta
 imageSlide("What about multi-agent systems?", "multi-agent-trifecta.png", 1180, 740,
   "Split into least-privileged agents and the trifecta reassembles across them — via messages and shared memory.",
-  "The natural question: doesn't splitting into specialised, least-privileged agents fix this? It's necessary but NOT sufficient. Walk the red path: a poisoned doc hits the Research agent (untrusted); the injected instruction rides the shared memory / message bus to the Analytics agent (reads PII), which hands off to the Comms agent (sends out). No single agent holds all three legs — the SYSTEM does. The graph didn't shrink; it got bigger and harder to see: nodes are now (agent, tool) pairs; edges are agent-to-agent messages, delegation, and shared memory. Ziran scans multi-agent topologies (router/RAG, supervisor) too.");
+  "SAY: 'The obvious question — doesn't splitting into smaller, least-privilege agents fix this?'\n" +
+  "· Necessary, but not enough.\n" +
+  "· Walk the red path: a poisoned doc hits the Research agent → the instruction rides shared memory to the Analytics agent (reads PII) → hands off to the Comms agent (sends out).\n" +
+  "· No single agent holds all three legs — the SYSTEM does.\n" +
+  "· The graph didn't shrink. It got bigger and harder to see.");
 
 // 25 — breaking the graph across agents
 {
@@ -344,7 +419,14 @@ imageSlide("What about multi-agent systems?", "multi-agent-trifecta.png", 1180, 
   s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 6.26, w: 11.93, h: 0.66, fill: { color: INDIGOL }, line: { color: INDIGO, width: 1 }, rectRadius: 0.1 });
   s.addText("The same lesson, one level up: no single tool was dangerous — and no single agent is either. The risk lives in how they connect.",
     { x: 0.9, y: 6.26, w: 11.5, h: 0.66, valign: "middle", align: "center", fontFace: HEAD, fontSize: 15, color: INDIGO, bold: true });
-  s.addNotes("This is the remediation, lifted to the system level. Constrain the topology (allowlist agent-to-agent edges — not a mesh). Carry taint/provenance across the message bus and enforce at boundaries — the trifecta gate moves up to the orchestrator. Quarantine the untrusted-facing agent (dual-LLM: structured output only, never instructions to privileged agents). One human/deterministic gate at the closure point. Re-scan the whole system graph in CI. Land the kicker: no single tool was dangerous, and no single agent is either — the risk lives in how they connect.");
+  s.addNotes(
+    "SAY: 'Same fix, one level up.'\n" +
+    "· Constrain who talks to whom — not a full mesh.\n" +
+    "· Carry taint across messages; enforce at agent boundaries.\n" +
+    "· Quarantine the untrusted-facing agent — structured output only, never instructions to privileged agents.\n" +
+    "· One gate where a private+untrusted flow could reach the outside.\n" +
+    "· Re-scan the whole system graph in CI.\n" +
+    "SAY (kicker): 'No single tool was dangerous — and no single agent is either. The risk lives in how they connect.'");
 }
 
 // 26 — close
@@ -353,7 +435,9 @@ imageSlide("What about multi-agent systems?", "multi-agent-trifecta.png", 1180, 
   s.background = { color: INK };
   s.addText("The question isn't whether your\ntools are safe individually.", { x: 0.8, y: 2.1, w: 11.7, h: 1.8, fontFace: HEAD, fontSize: 40, color: WHITE, bold: true, lineSpacingMultiple: 1.05 });
   s.addText("It's what they're capable of together — and whether you ask that question before an attacker does.", { x: 0.82, y: 4.1, w: 11.2, h: 1.4, fontFace: BODY, fontSize: 22, color: "818CF8", italic: true, lineSpacingMultiple: 1.1 });
-  s.addNotes("Say: 'If you're building, reviewing, or signing off on agents: stop asking only whether each tool is safe. Ask what they're capable of together — and put that question in your pipeline, not in an attacker's hands.' Restate the thesis: the vulnerability lives in the graph, not in any node.");
+  s.addNotes(
+    "SAY: 'The question isn't whether your tools are safe one by one. It's what they can do together — and whether you ask that before an attacker does.'\n" +
+    "· Restate the thesis: the vulnerability lives in the graph, not in any node.");
 }
 
 // 27 — resources + disclaimer
@@ -375,7 +459,11 @@ imageSlide("What about multi-agent systems?", "multi-agent-trifecta.png", 1180, 
   s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 4.3, w: 11.93, h: 1.5, fill: { color: REDL }, line: { color: RED, width: 1.2 }, rectRadius: 0.1 });
   s.addText([{ text: "⚠  Education only.  ", options: { bold: true, color: RED } }, { text: "Quanta is deliberately composable and has a known, intentional vulnerability by design. Do not deploy it for real or connect it to real data.", options: { color: "7F1D1D" } }], { x: 1.05, y: 4.3, w: 11.2, h: 1.5, valign: "middle", fontFace: BODY, fontSize: 16, lineSpacingMultiple: 1.1 });
   s.addText("Thank you — questions?", { x: 0.7, y: 6.1, w: 11.9, h: 0.8, align: "center", fontFace: HEAD, fontSize: 24, color: INK, bold: true });
-  s.addNotes("Two repos, two QR codes — scan instead of typing: github.com/taoq-ai/quanta (the demo agent — education only, intentionally composable; run python scripts/demo.py) and github.com/taoq-ai/ziran (the open-source composition analysis). Note Quanta is deliberately vulnerable by design; don't deploy it for real. Take Q&A.");
+  s.addNotes(
+    "SAY: 'Two repos to try this yourself.' Point to the QR codes.\n" +
+    "· Quanta — the demo agent. Education only, vulnerable by design. Don't deploy it for real.\n" +
+    "· Ziran — open source, the composition analysis you just saw.\n" +
+    "· Thank the room. Take Q&A.");
 }
 
 p.writeFile({ fileName: path.join(__dirname, "quanta-talk.pptx") }).then((f) => console.log("wrote", f));
