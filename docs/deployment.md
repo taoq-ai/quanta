@@ -60,7 +60,7 @@ The [`Deploy to AgentCore`](../.github/workflows/deploy.yml) workflow runs on:
 It authenticates to AWS via OIDC (no stored keys), builds the dataset,
 configures + launches the agent, and runs a smoke `agentcore invoke`.
 
-> The workflow targets a `production` GitHub *environment*. Create it (Settings →
+> The workflow targets a `sandbox` GitHub *environment*. Create it (Settings →
 > Environments) if you want a manual approval gate before each deploy.
 
 ## 2b. Deploy from your machine
