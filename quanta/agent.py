@@ -55,7 +55,15 @@ def _build_strands_agent() -> Any:
         for spec in TOOL_CATALOG
     ]
     model = BedrockModel(model_id=SETTINGS.bedrock_model_id, region_name=SETTINGS.aws_region)
-    return Agent(model=model, tools=strands_tools, system_prompt=SYSTEM_PROMPT)
+    # callback_handler=None disables Strands' default stdout streaming: the
+    # caller (demo.py / the AgentCore runtime) owns output via the returned
+    # result. Without this, the answer is both streamed *and* re-printed.
+    return Agent(
+        model=model,
+        tools=strands_tools,
+        system_prompt=SYSTEM_PROMPT,
+        callback_handler=None,
+    )
 
 
 def _plan_query(lower: str) -> tuple[str, str, str, int, bool]:
