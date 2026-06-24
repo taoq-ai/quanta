@@ -11,8 +11,8 @@ All Python, no shell. From the repo root:
     python scripts/demo.py ask --cloud     # the deployed AgentCore agent
     python scripts/demo.py scan            # run Ziran + open the report (installs Ziran if missing)
     python scripts/demo.py exploit         # the breach, then the hardened fix
-    python scripts/demo.py exploit --vulnerable-only   # just the breach (slide 20)
-    python scripts/demo.py exploit --hardened-only     # just the fix (slide 22)
+    python scripts/demo.py exploit --vulnerable-only   # just the breach (slide 21)
+    python scripts/demo.py exploit --hardened-only     # just the fix (slide 23)
     python scripts/demo.py deploy          # agentcore configure + launch
 
 Three ways to run the agent: offline stub (default, no deps/AWS), --online (real
@@ -274,10 +274,10 @@ def main() -> None:
     pe = sub.add_parser("exploit", parents=[common], help="run the breach + hardened fix")
     pe_mode = pe.add_mutually_exclusive_group()
     pe_mode.add_argument(
-        "--vulnerable-only", action="store_true", help="only the breach (slide 20)"
+        "--vulnerable-only", action="store_true", help="only the breach (slide 21)"
     )
     pe_mode.add_argument(
-        "--hardened-only", action="store_true", help="only the hardened fix (slide 22)"
+        "--hardened-only", action="store_true", help="only the hardened fix (slide 23)"
     )
     sub.add_parser("deploy", parents=[common], help="deploy to Amazon Bedrock AgentCore")
     pall = sub.add_parser("all", parents=[common], help="ask -> scan -> exploit (default)")

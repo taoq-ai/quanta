@@ -29,19 +29,20 @@
 | 12 | Quanta, live | 0:21–0:23 | **demo:** real agent |
 | 13 | Four tools, four controls | 0:23–0:24 | 4 / 4 approved |
 | 14 | *Section 3:* Find the composition | 0:24–0:25 | — |
-| 15 | What Ziran does | 0:25–0:26 | Build the graph |
-| 16 | The graph, in three steps | 0:26–0:28 | graph-evolution |
-| 17 | **The reveal** (overlay) | 0:28–0:30 | every box held |
-| 18 | The real interactive graph (GIF) | 0:30–0:32 | **demo:** scan + graph |
-| 19 | *Section 4:* From finding to breach | 0:32–0:33 | — |
-| 20 | **Exploit, live** | 0:33–0:36 | **demo:** PII leaves |
-| 21 | Three vulnerabilities, one agent | 0:36–0:38 | LLM01 + LLM06 + composition |
-| 22 | **Hardened, live** | 0:38–0:40 | **demo:** same attack blocked |
-| 23 | Break the graph | 0:40–0:41 | the four controls |
-| 24 | What about multi-agent? | 0:41–0:43 | trifecta across agents |
-| 25 | Breaking the graph across agents | 0:43–0:44 | system-level remediation |
-| 26 | Close | 0:44–0:44 | thesis restated |
-| 27 | Resources & disclaimer | 0:44–0:45 | links, Q&A |
+| 15 | Meet Ziran | 0:25–0:26 | what it is (informative, no pitch) |
+| 16 | What Ziran does | 0:26–0:27 | Build the graph |
+| 17 | The graph, in three steps | 0:27–0:28 | graph-evolution |
+| 18 | **The reveal** (overlay) | 0:28–0:30 | every box held |
+| 19 | The real interactive graph (GIF) | 0:30–0:32 | **demo:** scan + graph |
+| 20 | *Section 4:* From finding to breach | 0:32–0:33 | — |
+| 21 | **Exploit, live** | 0:33–0:36 | **demo:** PII leaves |
+| 22 | Three vulnerabilities, one agent | 0:36–0:38 | LLM01 + LLM06 + composition |
+| 23 | **Hardened, live** | 0:38–0:40 | **demo:** same attack blocked |
+| 24 | Break the graph | 0:40–0:41 | the four controls |
+| 25 | What about multi-agent? | 0:41–0:43 | trifecta across agents |
+| 26 | Breaking the graph across agents | 0:43–0:44 | system-level remediation |
+| 27 | Close | 0:44–0:44 | thesis restated |
+| 28 | Resources & disclaimer | 0:44–0:45 | links, Q&A |
 
 ---
 
@@ -70,14 +71,16 @@ python scripts/demo.py --pause      # steps through: 3 real questions → live s
   python scripts/demo.py ask --online     # real Bedrock, in-process (no deploy)
   python scripts/demo.py ask --cloud      # the deployed AgentCore agent
   ```
-- **Slide 18 — find the composition (live Ziran):**
+- **Slide 19 — find the composition (live Ziran):**
   ```bash
   python scripts/demo.py scan             # installs Ziran if needed, scans, opens the report
   ```
   The slide embeds the real graph as a looping GIF — it plays in Presenter View and is the fallback if the live open stalls.
-- **Slides 20 + 23 — the breach, then the fix:**
+- **Slides 21 + 23 — the breach, then the fix:**
   ```bash
-  python scripts/demo.py exploit          # prints both runs (vulnerable, then hardened)
+  python scripts/demo.py exploit --vulnerable-only   # slide 21 (the breach)
+  python scripts/demo.py exploit --hardened-only     # slide 23 (the fix)
+  # …or `exploit` alone prints both runs back-to-back
   ```
 
 ### If wifi/AWS fails
@@ -88,11 +91,11 @@ network. The frozen GIF/PNGs in `talk/assets/` are the ultimate safety net.
 ---
 
 ## Two beats to nail
-- **Slide 18 reveal (static + dynamic):** "I didn't tell Ziran this was dangerous — its built-in composition patterns did (static). And it's not theoretical: Ziran confirms the live exfil from the observed tool calls (dynamic). What it does NOT do — flag the agent merely listing its tools. The finding is the composition, not a keyword."
-- **Slide 20 climax:** narrate the **taint column going red** — `PRIVATE+UNTRUSTED` forming in one run, then the **full customer list (names + emails)** leaving to a mailbox **on the allowlisted domain**. That single moment is the payoff. Then: "No control was bypassed."
+- **Slide 19 reveal (static + dynamic):** "I didn't tell Ziran this was dangerous — its built-in composition patterns did (static). And it's not theoretical: Ziran confirms the live exfil from the observed tool calls (dynamic). What it does NOT do — flag the agent merely listing its tools. The finding is the composition, not a keyword."
+- **Slide 21 climax:** narrate the **taint column going red** — `PRIVATE+UNTRUSTED` forming in one run, then the **full customer list (names + emails)** leaving to a mailbox **on the allowlisted domain**. That single moment is the payoff. Then: "No control was bypassed."
 - **Likely Q&A — "it says VULNERABLE but 0 vulnerabilities?"** That counter is *prompt-level* attack findings (the focused scan skips those phases). The real finding is the **critical composition** in the "Dangerous Tool Chains" section — that's what flips the verdict to VULNERABLE. The composition *is* the vulnerability.
 
-## Policy beat — how the fix is applied (slides 20 & 22)
+## Policy beat — how the fix is applied (slides 21 & 23)
 Both runs are the **same agent, tools, prompt, and injection** — the only change is one object passed into the agent loop: the **policy** (`exploit.py` → `HardenedPolicy() if hardened else PermissivePolicy()`). Say that out loud; it's the whole thesis.
 
 **How it's applied:** the policy is two checkpoints *inside* the loop, not an outside filter. Before the agent obeys any instruction it found in fetched content it calls `review_external_instruction(...)`; before any outbound send it calls `review_delivery(recipient, requester, taint)`. Permissive says *yes* to both (a normal agent). Hardened applies three rules:
@@ -111,4 +114,4 @@ Both runs are the **same agent, tools, prompt, and injection** — the only chan
 
 **Closing line:** "I didn't patch a tool or rewrite a prompt — I added a policy over the *composition*, and the same attack now does nothing. The vulnerability lived in the graph; so does the fix."
 
-**Timing guardrails:** if running long, trim slide 7 (two failure shapes) and keep the multi-agent pair (24–25) tight — slide 24 is the beat, slide 25 can be a quick read or held for Q&A. **Never cut the reveal (17–18) or the exploit (20, 22).** The multi-agent slides also double as a ready answer to "doesn't multi-agent solve this?"
+**Timing guardrails:** if running long, trim slide 7 (two failure shapes) and keep the multi-agent pair (25–26) tight — slide 25 is the beat, slide 26 can be a quick read or held for Q&A. **Never cut the reveal (18–19) or the exploit (21, 23).** The Meet-Ziran slide (15) can drop to one sentence if time is short. The multi-agent slides also double as a ready answer to "doesn't multi-agent solve this?"

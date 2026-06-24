@@ -253,7 +253,37 @@ imageSlide("…and notice it's well-built", "architecture.png", 1100, 660,
 // 14 — section 3
 { const s = p.addSlide(); section(s, "3", "Live — find the composition", "Stop reviewing tools one at a time. Look at what they do together."); s.addNotes("SAY: 'Instead of reviewing tools one at a time, let's look at what they can do together.'"); }
 
-// 15 — what ziran does
+// 15 — meet Ziran (intro)
+{
+  const s = p.addSlide();
+  contentHead(s, "Meet Ziran");
+  s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 1.55, w: 11.93, h: 0.95, fill: { color: INDIGOL }, line: { color: INDIGO, width: 1 }, rectRadius: 0.1 });
+  s.addText("An open-source scanner for what an agent's tools can do together — not whether each one is safe alone.",
+    { x: 1.05, y: 1.55, w: 11.2, h: 0.95, valign: "middle", fontFace: HEAD, fontSize: 19, color: INDIGO, bold: true, lineSpacingMultiple: 1.05 });
+  const items = [
+    ["Static analysis", "Reads the agent's tool graph — it doesn't need to run the live model."],
+    ["Known-dangerous compositions", "Looks for structural patterns like the lethal trifecta, not keywords."],
+    ["Local or in CI", "A check you can put in your pipeline, before anyone is attacked."],
+    ["Complements red-teaming", "Finds the path that exists; red-teaming tests whether a given model walks it."],
+  ];
+  let y = 2.75;
+  items.forEach(([h, d]) => {
+    s.addShape(p.ShapeType.ellipse, { x: 0.9, y: y + 0.16, w: 0.28, h: 0.28, fill: { color: INDIGO } });
+    s.addText(h, { x: 1.45, y, w: 4.5, h: 0.78, valign: "middle", fontFace: HEAD, fontSize: 17, color: INK, bold: true });
+    s.addText(d, { x: 6.05, y, w: 6.5, h: 0.78, valign: "middle", fontFace: BODY, fontSize: 14.5, color: SLATE, lineSpacingMultiple: 1.05 });
+    y += 0.9;
+  });
+  s.addText("Open source · github.com/taoq-ai/ziran", { x: 0.7, y: 6.4, w: 11.9, h: 0.4, fontFace: "Courier New", fontSize: 13, color: MUTE });
+  s.addNotes(
+    "SAY: 'Quick intro — what Ziran actually is.'\n" +
+    "· An open-source scanner that looks at what an agent's tools can do together.\n" +
+    "· Static — it reads the tool graph, doesn't need to run the model.\n" +
+    "· It looks for known-dangerous combinations, like the trifecta.\n" +
+    "· Runs locally or in CI — and it complements prompt red-teaming, doesn't replace it.\n" +
+    "· Keep it light — the next slide is how it works.");
+}
+
+// 16 — what ziran does
 {
   const s = p.addSlide();
   contentHead(s, "What Ziran does");
@@ -276,20 +306,20 @@ imageSlide("…and notice it's well-built", "architecture.png", 1100, 660,
     "· 'It's not testing prompts here. It's reasoning about structure.'");
 }
 
-// 16 — graph evolution
+// 17 — graph evolution
 imageSlide("The graph, in three steps", "graph-evolution.png", 1200, 460,
   "Four approved tools → the agent can sequence them → one path is an exit.",
   "SAY (walk the three panels): 'Four approved tools → the agent can sequence them → one path is an exit.'\n" +
   "· 'Nothing here is hypothetical. An agent really can call send right after search.'");
 
-// 17 — the reveal
+// 18 — the reveal
 imageSlide("…and the composition is still critical", "architecture-overlay.png", 1100, 660,
   "Every control held. The path between them did not — and the agent can walk it.",
   "SAY slowly: 'Every control still holds. Read-only: held. Sandbox: held. Allowlists: held.'\n" +
   "· 'And here's the path: untrusted content comes in, the agent reads private data, and ships it out — every step allowed.'\n" +
   "· 'Every box was hardened. The arrow wasn't.'");
 
-// 18 — the real interactive graph (animated GIF)
+// 19 — the real interactive graph (animated GIF)
 imageSlide("This isn't a drawing — it's the scan", "ziran_graph.gif", 940, 825,
   "The red node IS the finding: Ziran flags the composition statically, then confirms the live exfil dynamically.",
   "*** LIVE DEMO — find the composition ***\n\n" +
@@ -302,10 +332,10 @@ imageSlide("This isn't a drawing — it's the scan", "ziran_graph.gif", 940, 825
   "SAY (static): 'I didn't tell Ziran this was dangerous. I gave it a graph; it handed me the exit.'\n" +
   "SAY (dynamic): 'And it's not theoretical — it confirms the leak from the real tool calls. Notice what it does NOT flag: an agent just listing its tools. The finding is the composition, not a keyword.'");
 
-// 19 — section 4
+// 20 — section 4
 { const s = p.addSlide(); section(s, "4", "From finding to breach — and back", "Ziran found the path. Now watch an attacker walk it — then watch us close it."); s.addNotes("SAY: 'Ziran found the path before anyone attacked. Now let's walk it like an attacker — then close it.'"); }
 
-// 20 — exploit, live
+// 21 — exploit, live
 imageSlide("Theoretical? Watch it happen — live, offline", "exploit_vulnerable.png", 1287, 368,
   "Benign request + a poisoned reference → the full customer table (names + emails) to an attacker mailbox on the ALLOWLISTED domain. Every per-tool control held.",
   "*** LIVE DEMO — the breach ***\n\n" +
@@ -318,7 +348,7 @@ imageSlide("Theoretical? Watch it happen — live, offline", "exploit_vulnerable
   "· The model picked the recipient = excessive agency (LLM06).\n\n" +
   "SAY slowly: 'No control was bypassed. The data left through fully allowed actions.'");
 
-// 21 — three vulnerabilities, one agent
+// 22 — three vulnerabilities, one agent
 {
   const s = p.addSlide();
   contentHead(s, "Three vulnerabilities, one agent");
@@ -347,7 +377,7 @@ imageSlide("Theoretical? Watch it happen — live, offline", "exploit_vulnerable
     "· None of them is a bug in a single tool.");
 }
 
-// 22 — hardened, live
+// 23 — hardened, live
 imageSlide("Break the graph: the same attack, blocked", "exploit_hardened.png", 1287, 343,
   "One injected security policy. Injection refused as data; model-chosen recipient denied; the analyst's summary still goes out. Same agent, same payload.",
   "*** LIVE DEMO — the fix ***\n\n" +
@@ -359,7 +389,7 @@ imageSlide("Break the graph: the same attack, blocked", "exploit_hardened.png", 
   "· But the analyst's real summary STILL goes out.\n\n" +
   "SAY: 'The fix didn't break the product. We broke the path, not the agent.'");
 
-// 23 — what actually breaks the path
+// 24 — what actually breaks the path
 {
   const s = p.addSlide();
   contentHead(s, "The fix isn't 'remove a tool'. Break the graph.");
@@ -387,7 +417,7 @@ imageSlide("Break the graph: the same attack, blocked", "exploit_hardened.png", 
     "· It's all real, tested code in quanta/security/.");
 }
 
-// 24 — multi-agent: the distributed trifecta
+// 25 — multi-agent: the distributed trifecta
 imageSlide("What about multi-agent systems?", "multi-agent-trifecta.png", 1180, 740,
   "Split into least-privileged agents and the trifecta reassembles across them — via messages and shared memory.",
   "SAY: 'The obvious question — doesn't splitting into smaller, least-privilege agents fix this?'\n" +
@@ -396,7 +426,7 @@ imageSlide("What about multi-agent systems?", "multi-agent-trifecta.png", 1180, 
   "· No single agent holds all three legs — the SYSTEM does.\n" +
   "· The graph didn't shrink. It got bigger and harder to see.");
 
-// 25 — breaking the graph across agents
+// 26 — breaking the graph across agents
 {
   const s = p.addSlide();
   contentHead(s, "Breaking the graph — across agents");
@@ -429,7 +459,7 @@ imageSlide("What about multi-agent systems?", "multi-agent-trifecta.png", 1180, 
     "SAY (kicker): 'No single tool was dangerous — and no single agent is either. The risk lives in how they connect.'");
 }
 
-// 26 — close
+// 27 — close
 {
   const s = p.addSlide();
   s.background = { color: INK };
@@ -440,7 +470,7 @@ imageSlide("What about multi-agent systems?", "multi-agent-trifecta.png", 1180, 
     "· Restate the thesis: the vulnerability lives in the graph, not in any node.");
 }
 
-// 27 — resources + disclaimer
+// 28 — resources + disclaimer
 {
   const s = p.addSlide();
   contentHead(s, "Try it yourself");
