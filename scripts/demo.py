@@ -107,7 +107,10 @@ def do_ask(questions: list[str], cloud: bool) -> None:
 
 def do_scan(out: Path, no_install: bool) -> None:
     _step("Now turn Ziran on it — find what the tools can do *together*")
-    if not _ziran_available() and not no_install:
+    # Prefer a sibling ../ziran checkout so the demo uses the latest source
+    # (which surfaces tool-composition chains as findings), not a stale wheel.
+    local_src = (ROOT.parent / "ziran" / "pyproject.toml").exists()
+    if not no_install and (local_src or not _ziran_available()):
         _install_ziran()
 
     out.mkdir(parents=True, exist_ok=True)

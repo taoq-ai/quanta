@@ -81,8 +81,11 @@ def main() -> None:
         reset()
         hold(7)
 
-        # 2) tour each attack path (search_database, send_email_report, run_analysis, ...)
-        for i in (0, 3, 1, 2):
+        # 2) tour the attack paths that lead to the composition finding (red node)
+        n_paths = page.evaluate(
+            "() => (typeof criticalPaths !== 'undefined' ? criticalPaths.length : 0)"
+        )
+        for i in range(min(n_paths, 4)):
             show_path(i)
             hold(6)
 

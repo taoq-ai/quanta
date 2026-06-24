@@ -245,12 +245,12 @@ imageSlide("…and the composition is still critical", "architecture-overlay.png
 
 // 18 — the real interactive graph (animated GIF)
 imageSlide("This isn't a drawing — it's the scan", "ziran_graph.gif", 940, 825,
-  "The real Ziran interactive graph. One critical finding: search_database → send_email_report, data_exfiltration.",
+  "The red node IS the finding: Ziran flags the composition statically, then confirms the live exfil dynamically.",
   "*** LIVE DEMO — find the composition ***\n" +
-  "Run:  python scripts/demo.py scan   (installs Ziran if needed, then opens the report)\n" +
-  "It scans in-process and opens reports/*_report.html — pan the graph, click the red node.\n" +
+  "Run:  python scripts/demo.py scan   (installs the local Ziran if needed, then opens the report)\n" +
+  "It scans in-process and prints two beats — STATIC (the composition Ziran finds in the tool graph) and DYNAMIC (Ziran confirms the exfil from the observed tool calls) — then opens reports/*_report.html. Pan the graph, click the red node.\n" +
   "(This slide embeds the real interactive graph as a looping GIF — it plays in Presenter/slideshow, and is the fallback if the live open stalls.)\n" +
-  "One critical finding: search_database → send_email_report, data_exfiltration. Say: 'I didn't tell Ziran this was dangerous — that verdict is from its built-in patterns. I gave it a graph; it gave me the exit. But a finding on a slide is easy to wave away — so let me show you the exit actually being used.'");
+  "STATIC: 'I didn't tell Ziran this was dangerous — that critical verdict is from its built-in composition patterns. I gave it a graph; it handed me the exit.' DYNAMIC: 'and it's not theoretical — Ziran confirms the exfil from the observed tool calls. Note what it does NOT do: it never flags the agent merely listing its tools. The finding is the composition, not a keyword.'");
 
 // 19 — section 4
 { const s = p.addSlide(); section(s, "4", "From finding to breach — and back", "Ziran found the path. Now watch an attacker walk it — then watch us close it."); s.addNotes("Divider. 'Ziran found the path statically, before anyone attacked. Now let's walk it like an attacker — then close it.'"); }
