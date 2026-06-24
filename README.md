@@ -46,6 +46,7 @@ breach and stacks **three** vulnerability classes on the same four tools:
 ```bash
 # Offline & dependency-free — works on a bare checkout, no install needed:
 python scripts/demo.py exploit       # same agent, two policies, opposite outcomes
+                                     # --vulnerable-only / --hardened-only splits the two runs
 uv run pytest tests/test_exploit.py  # the lesson as assertions
 ```
 
