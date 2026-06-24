@@ -7,13 +7,15 @@ All Python, no shell. From the repo root:
     python scripts/demo.py --pause         # wait for <enter> between steps (on stage)
 
     python scripts/demo.py ask             # 3 analytics questions (offline stub)
-    python scripts/demo.py ask --cloud "revenue by country, top 5"   # deployed agent
+    python scripts/demo.py ask --online    # real Bedrock, in-process (no deploy)
+    python scripts/demo.py ask --cloud     # the deployed AgentCore agent
     python scripts/demo.py scan            # run Ziran + open the report (installs Ziran if missing)
     python scripts/demo.py exploit         # the breach, then the hardened fix
     python scripts/demo.py deploy          # agentcore configure + launch
 
-The offline parts (ask, exploit) need nothing installed. `scan` needs Ziran and
-will install it for you (use --no-install to fall back to the frozen report).
+Three ways to run the agent: offline stub (default, no deps/AWS), --online (real
+Bedrock locally), --cloud (deployed runtime). The offline parts (stub ask,
+exploit) need nothing installed; `scan` needs Ziran and installs it for you.
 """
 
 from __future__ import annotations
@@ -86,22 +88,50 @@ def _install_ziran() -> None:
 
 
 # ── steps ────────────────────────────────────────────────────────────────────
-def do_ask(questions: list[str], cloud: bool) -> None:
+def do_ask(questions: list[str], *, cloud: bool = False, online: bool = False) -> None:
     _step("Quanta is a real analytics assistant")
     if cloud:
+        # The deployed AgentCore runtime (real Bedrock, in the cloud).
         for q in questions:
             _cmd(f"agentcore invoke '{json.dumps({'prompt': q})}'")
             subprocess.run(["agentcore", "invoke", json.dumps({"prompt": q})], check=False)
             _pause()
         return
-    os.environ["QUANTA_STUB"] = "1"
+
     sys.path.insert(0, str(ROOT))
+    if online:
+        # Real Strands + Bedrock, in-process — no deploy. Needs the agentcore
+        # extra and AWS credentials with Bedrock model access.
+        os.environ.pop("QUANTA_STUB", None)
+        try:
+            import strands  # noqa: F401
+        except ImportError:
+            print(_c("33", "   --online needs the agentcore extra and AWS credentials:"))
+            print("     pip install -e '.[agentcore]'")
+            print("     aws sso login   (or export AWS_* keys)   ·   export AWS_REGION=eu-west-1")
+            print("   then re-run.  (Drop --online to use the offline stub.)")
+            return
+        label = "quanta agent (Bedrock, local)"
+    else:
+        os.environ["QUANTA_STUB"] = "1"
+        label = "quanta agent (offline stub)"
+
     from quanta.agent import invoke
 
     for q in questions:
-        _cmd(f'quanta agent (offline stub) ← "{q}"')
+        _cmd(f'{label} ← "{q}"')
         print(f"\n>>> {q}\n")
-        print(invoke({"prompt": q})["result"])
+        try:
+            print(invoke({"prompt": q})["result"])
+        except Exception as exc:  # noqa: BLE001
+            if not online:
+                raise
+            print(_c("33", f"   Bedrock call failed: {exc}"))
+            print(
+                "   Check AWS creds, AWS_REGION, and Bedrock model access "
+                "(model id is in quanta/config.py)."
+            )
+            return
         _pause()
 
 
@@ -188,7 +218,13 @@ def main() -> None:
 
     pa = sub.add_parser("ask", help="run the analytics questions")
     pa.add_argument("questions", nargs="*")
-    pa.add_argument("--cloud", action="store_true", help="use the deployed AgentCore agent")
+    pa_mode = pa.add_mutually_exclusive_group()
+    pa_mode.add_argument("--cloud", action="store_true", help="the deployed AgentCore agent")
+    pa_mode.add_argument(
+        "--online",
+        action="store_true",
+        help="real Strands+Bedrock, in-process (needs .[agentcore] + AWS creds)",
+    )
 
     ps = sub.add_parser("scan", help="run Ziran and open the report")
     ps.add_argument("--out", type=Path, default=ROOT / "reports")
@@ -197,7 +233,9 @@ def main() -> None:
     sub.add_parser("exploit", help="run the breach + hardened fix")
     sub.add_parser("deploy", help="deploy to Amazon Bedrock AgentCore")
     pall = sub.add_parser("all", help="ask -> scan -> exploit (default)")
-    pall.add_argument("--cloud", action="store_true")
+    pall_mode = pall.add_mutually_exclusive_group()
+    pall_mode.add_argument("--cloud", action="store_true")
+    pall_mode.add_argument("--online", action="store_true")
     pall.add_argument("--no-install", action="store_true")
 
     args = parser.parse_args()
@@ -205,7 +243,7 @@ def main() -> None:
 
     cmd = args.cmd or "all"
     if cmd == "ask":
-        do_ask(args.questions or QUESTIONS, args.cloud)
+        do_ask(args.questions or QUESTIONS, cloud=args.cloud, online=args.online)
     elif cmd == "scan":
         do_scan(args.out, args.no_install)
     elif cmd == "exploit":
@@ -213,7 +251,9 @@ def main() -> None:
     elif cmd == "deploy":
         do_deploy()
     else:  # all
-        do_ask(QUESTIONS, getattr(args, "cloud", False))
+        do_ask(
+            QUESTIONS, cloud=getattr(args, "cloud", False), online=getattr(args, "online", False)
+        )
         do_scan(ROOT / "reports", getattr(args, "no_install", False))
         do_exploit()
 

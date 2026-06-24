@@ -13,6 +13,12 @@ GitHub Actions (OIDC)                     AWS
 The container is built **in AWS CodeBuild**, so neither your laptop nor the CI
 runner needs Docker.
 
+> **Don't need a deployment?** To run the agent on the real Bedrock model
+> *without* deploying, use the in-process online mode:
+> `pip install -e '.[agentcore]'`, set AWS creds (`aws sso login`, `export AWS_REGION=eu-west-1`),
+> then `python scripts/demo.py ask --online`. Deploy (below) is for a persistent,
+> audited runtime and the on-stage `agentcore invoke` credibility moment.
+
 ## Architecture of the deploy
 
 - **Entrypoint:** `quanta/agent.py` exposes `BedrockAgentCoreApp` with an

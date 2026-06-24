@@ -67,6 +67,7 @@ python scripts/demo.py --pause      # steps through: 3 real questions → live s
 - **Slide 12 — it's a real agent:**
   ```bash
   python scripts/demo.py ask              # offline stub (3 questions)
+  python scripts/demo.py ask --online     # real Bedrock, in-process (no deploy)
   python scripts/demo.py ask --cloud      # the deployed AgentCore agent
   ```
 - **Slide 18 — find the composition (live Ziran):**
@@ -89,5 +90,6 @@ network. The frozen GIF/PNGs in `talk/assets/` are the ultimate safety net.
 ## Two beats to nail
 - **Slide 18 reveal (static + dynamic):** "I didn't tell Ziran this was dangerous — its built-in composition patterns did (static). And it's not theoretical: Ziran confirms the live exfil from the observed tool calls (dynamic). What it does NOT do — flag the agent merely listing its tools. The finding is the composition, not a keyword."
 - **Slide 20 climax:** narrate the **taint column going red** — `PRIVATE+UNTRUSTED` forming in one run, then 16,741 bytes of PII leaving to a mailbox **on the allowlisted domain**. That single moment is the payoff. Then: "No control was bypassed."
+- **Likely Q&A — "it says VULNERABLE but 0 vulnerabilities?"** That counter is *prompt-level* attack findings (the focused scan skips those phases). The real finding is the **critical composition** in the "Dangerous Tool Chains" section — that's what flips the verdict to VULNERABLE. The composition *is* the vulnerability.
 
 **Timing guardrails:** if running long, trim slide 7 (two failure shapes) and keep the multi-agent pair (24–25) tight — slide 24 is the beat, slide 25 can be a quick read or held for Q&A. **Never cut the reveal (17–18) or the exploit (20, 22).** The multi-agent slides also double as a ready answer to "doesn't multi-agent solve this?"
