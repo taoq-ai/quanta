@@ -359,14 +359,22 @@ imageSlide("What about multi-agent systems?", "multi-agent-trifecta.png", 1180, 
 {
   const s = p.addSlide();
   contentHead(s, "Try it yourself");
+  // Quanta card (text left, QR right)
   s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 1.7, w: 5.85, h: 2.3, fill: { color: INDIGOL }, line: { color: INDIGO, width: 1 }, rectRadius: 0.1 });
-  s.addText([{ text: "Quanta\n", options: { bold: true, color: INDIGO, fontSize: 20, fontFace: HEAD } }, { text: "github.com/taoq-ai/quanta\n\n", options: { color: SLATE, fontSize: 15, fontFace: "Courier New" } }, { text: "The demo agent — defensible architecture, one composition finding. Run python scripts/demo.py yourself.", options: { color: SLATE, fontSize: 15 } }], { x: 1.05, y: 1.95, w: 5.2, h: 1.8, valign: "top", fontFace: BODY, lineSpacingMultiple: 1.1 });
+  s.addText([{ text: "Quanta\n", options: { bold: true, color: INDIGO, fontSize: 20, fontFace: HEAD } }, { text: "github.com/taoq-ai/quanta\n\n", options: { color: SLATE, fontSize: 13, fontFace: "Courier New" } }, { text: "The demo agent — defensible architecture, one composition finding.", options: { color: SLATE, fontSize: 14 } }], { x: 1.05, y: 1.95, w: 3.55, h: 1.9, valign: "top", fontFace: BODY, lineSpacingMultiple: 1.1 });
+  s.addShape(p.ShapeType.roundRect, { x: 4.78, y: 1.95, w: 1.6, h: 1.6, fill: { color: WHITE }, rectRadius: 0.06 });
+  s.addImage({ path: A("qr_quanta.png"), x: 4.88, y: 2.05, w: 1.4, h: 1.4 });
+  s.addText("scan to open", { x: 4.78, y: 3.55, w: 1.6, h: 0.3, align: "center", fontFace: BODY, fontSize: 10, color: MUTE });
+  // Ziran card (text left, QR right)
   s.addShape(p.ShapeType.roundRect, { x: 6.78, y: 1.7, w: 5.85, h: 2.3, fill: { color: "ECFDF5" }, line: { color: GREEN, width: 1 }, rectRadius: 0.1 });
-  s.addText([{ text: "Ziran\n", options: { bold: true, color: GREEN, fontSize: 20, fontFace: HEAD } }, { text: "github.com/taoq-ai/ziran\n\n", options: { color: SLATE, fontSize: 15, fontFace: "Courier New" } }, { text: "Open-source — the composition analysis used in this demo.", options: { color: SLATE, fontSize: 15 } }], { x: 7.13, y: 1.95, w: 5.2, h: 1.8, valign: "top", fontFace: BODY, lineSpacingMultiple: 1.1 });
+  s.addText([{ text: "Ziran\n", options: { bold: true, color: GREEN, fontSize: 20, fontFace: HEAD } }, { text: "github.com/taoq-ai/ziran\n\n", options: { color: SLATE, fontSize: 13, fontFace: "Courier New" } }, { text: "Open-source — the composition analysis used here.", options: { color: SLATE, fontSize: 14 } }], { x: 7.13, y: 1.95, w: 3.55, h: 1.9, valign: "top", fontFace: BODY, lineSpacingMultiple: 1.1 });
+  s.addShape(p.ShapeType.roundRect, { x: 10.86, y: 1.95, w: 1.6, h: 1.6, fill: { color: WHITE }, rectRadius: 0.06 });
+  s.addImage({ path: A("qr_ziran.png"), x: 10.96, y: 2.05, w: 1.4, h: 1.4 });
+  s.addText("scan to open", { x: 10.86, y: 3.55, w: 1.6, h: 0.3, align: "center", fontFace: BODY, fontSize: 10, color: MUTE });
   s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 4.3, w: 11.93, h: 1.5, fill: { color: REDL }, line: { color: RED, width: 1.2 }, rectRadius: 0.1 });
   s.addText([{ text: "⚠  Education only.  ", options: { bold: true, color: RED } }, { text: "Quanta is deliberately composable and has a known, intentional vulnerability by design. Do not deploy it for real or connect it to real data.", options: { color: "7F1D1D" } }], { x: 1.05, y: 4.3, w: 11.2, h: 1.5, valign: "middle", fontFace: BODY, fontSize: 16, lineSpacingMultiple: 1.1 });
   s.addText("Thank you — questions?", { x: 0.7, y: 6.1, w: 11.9, h: 0.8, align: "center", fontFace: HEAD, fontSize: 24, color: INK, bold: true });
-  s.addNotes("Links: github.com/taoq-ai/quanta (the demo agent — education only, intentionally composable; run scripts/exploit_demo.py), github.com/taoq-ai/ziran (the finder). Note Quanta is deliberately vulnerable by design; don't deploy it for real. Take Q&A.");
+  s.addNotes("Two repos, two QR codes — scan instead of typing: github.com/taoq-ai/quanta (the demo agent — education only, intentionally composable; run python scripts/demo.py) and github.com/taoq-ai/ziran (the open-source composition analysis). Note Quanta is deliberately vulnerable by design; don't deploy it for real. Take Q&A.");
 }
 
 p.writeFile({ fileName: path.join(__dirname, "quanta-talk.pptx") }).then((f) => console.log("wrote", f));
