@@ -34,10 +34,11 @@ try:
     from ziran.interfaces.cli.reports import ReportGenerator
 except ModuleNotFoundError as exc:  # pragma: no cover
     raise SystemExit(
-        "\nThis scan needs ZIRAN, which is not installed.\n"
+        "\nThis scan needs Ziran, which is not installed.\n"
         "  install from PyPI:   pip install 'ziran[agentcore]'\n"
         "  or a local checkout: pip install -e ../ziran\n"
-        "Then re-run.  (The exploit demo — scripts/exploit_demo.py — needs nothing.)\n"
+        "  or just:             python scripts/demo.py scan   (installs it for you)\n"
+        "The exploit demo needs nothing:  python scripts/demo.py exploit\n"
     ) from exc
 
 from quanta.agent import invoke
