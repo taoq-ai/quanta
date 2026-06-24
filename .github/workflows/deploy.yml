@@ -9,7 +9,7 @@ name: Deploy to AgentCore
 #        AWS_REGION                     e.g. us-east-1
 #        AWS_DEPLOY_ROLE_ARN            -> DeployRoleArn output
 #        AGENTCORE_EXECUTION_ROLE_ARN   -> ExecutionRoleArn output
-#   3. (Optional) create a "production" environment for manual approval gating.
+#   3. (Optional) create a "sandbox" environment for manual approval gating.
 
 on:
   workflow_dispatch:
@@ -41,7 +41,7 @@ jobs:
     # Skip cleanly until the one-time bootstrap is done and repo variables exist,
     # so the first push doesn't trigger a guaranteed-failing deploy.
     if: vars.AWS_DEPLOY_ROLE_ARN != ''
-    environment: production
+    environment: sandbox
     env:
       AWS_REGION: ${{ vars.AWS_REGION || 'us-east-1' }}
     steps:
