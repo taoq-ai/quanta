@@ -18,17 +18,17 @@ DEFAULT_DB_PATH = REPO_ROOT / "quanta" / "data" / "analytics.db"
 def _default_model_id() -> str:
     """Pick a Bedrock model id, region-aware.
 
-    ``QUANTA_MODEL_ID`` always wins. Otherwise: EU Bedrock does not offer the
-    direct Claude 3.5 Sonnet model, so in ``eu-*`` regions default to an EU
-    cross-region inference profile; elsewhere keep the direct model id.
+    ``QUANTA_MODEL_ID`` always wins. Otherwise default to a current Claude
+    Sonnet 4.5 **cross-region inference profile** (recent Bedrock Claude models
+    are only invocable via a profile, not the bare model id): ``eu.`` for EU
+    regions, ``us.`` elsewhere.
     """
     explicit = os.getenv("QUANTA_MODEL_ID")
     if explicit:
         return explicit
     region = os.getenv("AWS_REGION", "us-east-1")
-    if region.startswith("eu-"):
-        return "eu.anthropic.claude-sonnet-4-5-20250929-v1:0"
-    return "anthropic.claude-3-5-sonnet-20241022-v2:0"
+    prefix = "eu" if region.startswith("eu-") else "us"
+    return f"{prefix}.anthropic.claude-sonnet-4-5-20250929-v1:0"
 
 
 @dataclass(frozen=True)
