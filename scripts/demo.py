@@ -77,12 +77,20 @@ def _ziran_available() -> bool:
 
 def _install_ziran() -> None:
     local = ROOT.parent / "ziran"
-    if (local / "pyproject.toml").exists():
-        args = [sys.executable, "-m", "pip", "install", "-e", str(local)]
-        _cmd(f"pip install -e {local}")
+    editable = (local / "pyproject.toml").exists()
+    target = str(local) if editable else "ziran[agentcore]>=0.37.0"
+    # uv-created venvs have no `pip`, so `python -m pip` silently fails and
+    # leaves any stale wheel in place. Prefer `uv pip` when uv is on PATH so a
+    # sibling ../ziran checkout (with the composition-findings API the scan
+    # needs) actually installs and replaces an older pinned wheel.
+    if shutil.which("uv"):
+        args = ["uv", "pip", "install", "--python", sys.executable]
+        shown = "uv pip install"
     else:
-        args = [sys.executable, "-m", "pip", "install", "ziran[agentcore]"]
-        _cmd("pip install 'ziran[agentcore]'")
+        args = [sys.executable, "-m", "pip", "install"]
+        shown = "pip install"
+    args += ["-e", target] if editable else [target]
+    _cmd(f"{shown} {('-e ' + str(local)) if editable else repr(target)}")
     print(_c("2", "   installing Ziran…"))
     subprocess.run(args, check=False)
 
