@@ -11,6 +11,8 @@ All Python, no shell. From the repo root:
     python scripts/demo.py ask --cloud     # the deployed AgentCore agent
     python scripts/demo.py scan            # run Ziran + open the report (installs Ziran if missing)
     python scripts/demo.py exploit         # the breach, then the hardened fix
+    python scripts/demo.py exploit --vulnerable-only   # just the breach (slide 20)
+    python scripts/demo.py exploit --hardened-only     # just the fix (slide 22)
     python scripts/demo.py deploy          # agentcore configure + launch
 
 Three ways to run the agent: offline stub (default, no deps/AWS), --online (real
@@ -174,11 +176,19 @@ def do_scan(out: Path, no_install: bool) -> None:
     _pause()
 
 
-def do_exploit() -> None:
-    _step("Watch the composition get exploited, then blocked")
+def do_exploit(*, vulnerable_only: bool = False, hardened_only: bool = False) -> None:
+    if vulnerable_only:
+        _step("Watch the composition get exploited")
+        flag = ["--vulnerable-only"]
+    elif hardened_only:
+        _step("Watch the same attack get blocked")
+        flag = ["--hardened-only"]
+    else:
+        _step("Watch the composition get exploited, then blocked")
+        flag = []
     script = ROOT / "scripts" / "exploit_demo.py"
-    _cmd("python scripts/exploit_demo.py")
-    subprocess.run([sys.executable, str(script)], check=True, env=_child_env())
+    _cmd("python scripts/exploit_demo.py" + (f" {flag[0]}" if flag else ""))
+    subprocess.run([sys.executable, str(script), *flag], check=True, env=_child_env())
 
 
 def do_deploy() -> None:
@@ -261,7 +271,14 @@ def main() -> None:
     ps.add_argument("--out", type=Path, default=ROOT / "reports")
     ps.add_argument("--no-install", action="store_true", help="don't auto-install Ziran")
 
-    sub.add_parser("exploit", parents=[common], help="run the breach + hardened fix")
+    pe = sub.add_parser("exploit", parents=[common], help="run the breach + hardened fix")
+    pe_mode = pe.add_mutually_exclusive_group()
+    pe_mode.add_argument(
+        "--vulnerable-only", action="store_true", help="only the breach (slide 20)"
+    )
+    pe_mode.add_argument(
+        "--hardened-only", action="store_true", help="only the hardened fix (slide 22)"
+    )
     sub.add_parser("deploy", parents=[common], help="deploy to Amazon Bedrock AgentCore")
     pall = sub.add_parser("all", parents=[common], help="ask -> scan -> exploit (default)")
     pall.add_argument("--no-install", action="store_true")
@@ -289,7 +306,10 @@ def main() -> None:
         do_scan(args.out, args.no_install)
     elif cmd == "exploit":
         _note_offline()
-        do_exploit()
+        do_exploit(
+            vulnerable_only=getattr(args, "vulnerable_only", False),
+            hardened_only=getattr(args, "hardened_only", False),
+        )
     elif cmd == "deploy":
         do_deploy()
     else:  # all
