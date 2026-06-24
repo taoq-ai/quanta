@@ -230,6 +230,23 @@ def main() -> None:
         default=argparse.SUPPRESS,
         help="wait for <enter> between steps",
     )
+    # --online/--cloud accepted on every subcommand so habitual flag use never
+    # crashes mid-demo. Only ask/all act on them; scan/exploit run the offline
+    # deterministic harness and note the flag is ignored. SUPPRESS so an absent
+    # subparser copy doesn't clobber a value set before the subcommand.
+    mode = common.add_mutually_exclusive_group()
+    mode.add_argument(
+        "--online",
+        action="store_true",
+        default=argparse.SUPPRESS,
+        help="ask/all: real Strands+Bedrock, in-process (needs .[agentcore] + AWS creds)",
+    )
+    mode.add_argument(
+        "--cloud",
+        action="store_true",
+        default=argparse.SUPPRESS,
+        help="ask/all: the deployed AgentCore agent",
+    )
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -239,13 +256,6 @@ def main() -> None:
 
     pa = sub.add_parser("ask", parents=[common], help="run the analytics questions")
     pa.add_argument("questions", nargs="*")
-    pa_mode = pa.add_mutually_exclusive_group()
-    pa_mode.add_argument("--cloud", action="store_true", help="the deployed AgentCore agent")
-    pa_mode.add_argument(
-        "--online",
-        action="store_true",
-        help="real Strands+Bedrock, in-process (needs .[agentcore] + AWS creds)",
-    )
 
     ps = sub.add_parser("scan", parents=[common], help="run Ziran and open the report")
     ps.add_argument("--out", type=Path, default=ROOT / "reports")
@@ -254,27 +264,36 @@ def main() -> None:
     sub.add_parser("exploit", parents=[common], help="run the breach + hardened fix")
     sub.add_parser("deploy", parents=[common], help="deploy to Amazon Bedrock AgentCore")
     pall = sub.add_parser("all", parents=[common], help="ask -> scan -> exploit (default)")
-    pall_mode = pall.add_mutually_exclusive_group()
-    pall_mode.add_argument("--cloud", action="store_true")
-    pall_mode.add_argument("--online", action="store_true")
     pall.add_argument("--no-install", action="store_true")
 
     args = parser.parse_args()
     PAUSE = getattr(args, "pause", False)
+    online = getattr(args, "online", False)
+    cloud = getattr(args, "cloud", False)
+
+    def _note_offline() -> None:
+        if online or cloud:
+            print(
+                _c(
+                    "33",
+                    "   note: this step runs the offline deterministic harness — "
+                    "--online/--cloud ignored here.",
+                )
+            )
 
     cmd = args.cmd or "all"
     if cmd == "ask":
-        do_ask(args.questions or QUESTIONS, cloud=args.cloud, online=args.online)
+        do_ask(args.questions or QUESTIONS, cloud=cloud, online=online)
     elif cmd == "scan":
+        _note_offline()
         do_scan(args.out, args.no_install)
     elif cmd == "exploit":
+        _note_offline()
         do_exploit()
     elif cmd == "deploy":
         do_deploy()
     else:  # all
-        do_ask(
-            QUESTIONS, cloud=getattr(args, "cloud", False), online=getattr(args, "online", False)
-        )
+        do_ask(QUESTIONS, cloud=cloud, online=online)
         do_scan(ROOT / "reports", getattr(args, "no_install", False))
         do_exploit()
 
