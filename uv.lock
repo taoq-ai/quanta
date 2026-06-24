@@ -1258,7 +1258,7 @@ requires-dist = [
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4" },
     { name = "strands-agents", marker = "extra == 'agentcore'", specifier = ">=0.1" },
-    { name = "ziran", extras = ["agentcore"], marker = "extra == 'dev'" },
+    { name = "ziran", extras = ["agentcore"], marker = "extra == 'dev'", specifier = ">=0.37.0" },
 ]
 provides-extras = ["agentcore", "data", "dev"]
 
@@ -1736,7 +1736,7 @@ wheels = [
 
 [[package]]
 name = "ziran"
-version = "0.35.0"
+version = "0.37.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -1748,9 +1748,9 @@ dependencies = [
     { name = "pyyaml" },
     { name = "rich" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/44/e6/66d96b240cdc0afb9fe746ea41a5fe569bc254f2fbff1710b40276f8d8f1/ziran-0.35.0.tar.gz", hash = "sha256:1977bac0a1de665b7438ed9eb152a50fe2c22f98b37496ed64ba8a1fd36e4b2d", size = 4351806, upload-time = "2026-06-22T18:32:49.319Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/df/52/4ed1e6e513f5a835b48558a21df120c343b4bd0a49e815ded0df9cc4092f/ziran-0.37.1.tar.gz", hash = "sha256:16f709f579b37d101dfb010edd27270e80f977de5bcb27d6817f30eff7784f97", size = 4379081, upload-time = "2026-06-24T13:31:11.664Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b8/d9/37ef8f315501206bea112326f34233a6ac0a0e50a91360c6059ef2d9c534/ziran-0.35.0-py3-none-any.whl", hash = "sha256:c888d4bc9e9f8df9352c123179281799213f8967fb6f07f8db392ea5daeb9e12", size = 625360, upload-time = "2026-06-22T18:32:47.353Z" },
+    { url = "https://files.pythonhosted.org/packages/2a/de/9ab09d5b36446030b3f83559aee0ac597a1aefba9478fb95d0f5f0a4b799/ziran-0.37.1-py3-none-any.whl", hash = "sha256:631317e1d994a05afcc34055cecc08732b61fd05901e995d67a50daca63151f5", size = 628925, upload-time = "2026-06-24T13:31:09.689Z" },
 ]
 
 [package.optional-dependencies]
