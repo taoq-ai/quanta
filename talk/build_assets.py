@@ -27,6 +27,7 @@ SVGS = [
     (ASSETS / "credibility.svg", "credibility.png", 1100, 560),
     (ASSETS / "exploit_vulnerable.svg", "exploit_vulnerable.png", 1287, 368),
     (ASSETS / "exploit_hardened.svg", "exploit_hardened.png", 1287, 343),
+    (ASSETS / "multi-agent-trifecta.svg", "multi-agent-trifecta.png", 1180, 740),
 ]
 
 SCALE = 2  # 2x for crisp projection

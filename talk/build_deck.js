@@ -58,7 +58,7 @@ function imageSlide(title, img, natW, natH, caption, notes) {
   s.background = { color: INK };
   s.addText("When Your Agent Tools\nCombine Against You", { x: 0.8, y: 2.0, w: 11.7, h: 2.6, fontFace: HEAD, fontSize: 52, color: WHITE, bold: true, lineSpacingMultiple: 1.03 });
   s.addText("The vulnerability lives in the graph, not in any node.", { x: 0.82, y: 4.75, w: 11, h: 0.6, fontFace: BODY, fontSize: 22, color: "818CF8", italic: true });
-  s.addText("Live demo: a real Amazon Bedrock AgentCore agent, found with ZIRAN", { x: 0.82, y: 5.7, w: 11, h: 0.5, fontFace: BODY, fontSize: 16, color: "94A3B8" });
+  s.addText("Live demo: a real Amazon Bedrock AgentCore agent, found with Ziran", { x: 0.82, y: 5.7, w: 11, h: 0.5, fontFace: BODY, fontSize: 16, color: "94A3B8" });
   s.addNotes("Land the title, then a beat. 'By the end you'll have watched a clean, well-architected agent get one critical finding — and the finding isn't in any of its tools.' Audience: builders/engineers. 45 min: ~30 talk + ~10 demo + ~5 Q&A.");
 }
 
@@ -108,7 +108,7 @@ function imageSlide(title, img, natW, natH, caption, notes) {
     s.addText(d, { x: 6.1, y: y, w: 6.5, h: 0.9, valign: "middle", fontFace: BODY, fontSize: 16, color: SLATE });
     y += 1.25;
   });
-  s.addText("This is graph traversal — done by hand. ZIRAN does it automatically.", { x: 0.8, y: 6.2, w: 11.8, h: 0.6, fontFace: BODY, fontSize: 17, italic: true, color: MUTE });
+  s.addText("This is graph traversal — done by hand. Ziran does it automatically.", { x: 0.8, y: 6.2, w: 11.8, h: 0.6, fontFace: BODY, fontSize: 17, italic: true, color: MUTE });
   s.addNotes("Three moves: recon (what tools exist?), capability mapping (what does each touch — data? network? compute?), chaining (which sequence turns reasonable actions into one bad outcome?). Attackers don't look for A dangerous tool. They look for a PATH. This is graph traversal, done by hand.");
 }
 
@@ -216,7 +216,7 @@ imageSlide("…and notice it's well-built", "architecture.png", 1100, 660,
 // 15 — what ziran does
 {
   const s = p.addSlide();
-  contentHead(s, "What ZIRAN does differently");
+  contentHead(s, "What Ziran does");
   s.addText([
     { text: "It builds the agent's capability graph", options: { bold: true, color: INK, fontSize: 19 } },
     { text: "  — every tool, and every way one tool's output can flow into another.\n\n", options: { color: SLATE, fontSize: 17 } },
@@ -230,7 +230,7 @@ imageSlide("…and notice it's well-built", "architecture.png", 1100, 660,
     s.addText(d, { x, y: 4.5, w: 3.7, h: 0.6, align: "center", fontFace: "Courier New", fontSize: 18, color: SLATE });
   });
   s.addText("Here it isn't testing prompts. It's reasoning about structure.", { x: 0.7, y: 5.7, w: 11.9, h: 0.6, fontFace: BODY, fontSize: 18, italic: true, color: MUTE });
-  s.addNotes("ZIRAN builds the agent's capability graph and checks it against a library of known dangerous compositions — direct (A→B), indirect (A→…→B), and cycles. Say: 'It's not testing prompts here. It's reasoning about structure.'");
+  s.addNotes("Ziran builds the agent's capability graph and checks it against a library of known dangerous compositions — direct (A→B), indirect (A→…→B), and cycles. Say: 'It's not testing prompts here. It's reasoning about structure.'");
 }
 
 // 16 — graph evolution
@@ -244,16 +244,16 @@ imageSlide("…and the composition is still critical", "architecture-overlay.png
   "Back to the architecture — now with the red path. Say slowly: 'Every control still holds. Read-only: held. Sandbox: held. Allowlists: held. And here's the path: untrusted content comes in through fetch_reference, the agent reads private data with search_database, and ships it out through send_email_report — every step authorised. Every box was hardened. The arrow wasn't.'");
 
 // 18 — the real interactive graph (animated GIF)
-imageSlide("This isn't a drawing — it's the scan", "ziran_graph.gif", 900, 790,
-  "The real ZIRAN interactive graph. One critical finding: search_database → send_email_report, data_exfiltration.",
+imageSlide("This isn't a drawing — it's the scan", "ziran_graph.gif", 940, 825,
+  "The real Ziran interactive graph. One critical finding: search_database → send_email_report, data_exfiltration.",
   "*** LIVE DEMO — find the composition ***\n" +
-  "Run:  python scripts/demo.py scan   (installs ZIRAN if needed, then opens the report)\n" +
+  "Run:  python scripts/demo.py scan   (installs Ziran if needed, then opens the report)\n" +
   "It scans in-process and opens reports/*_report.html — pan the graph, click the red node.\n" +
   "(This slide embeds the real interactive graph as a looping GIF — it plays in Presenter/slideshow, and is the fallback if the live open stalls.)\n" +
-  "One critical finding: search_database → send_email_report, data_exfiltration. Say: 'I didn't tell ZIRAN this was dangerous — that verdict is from its built-in patterns. I gave it a graph; it gave me the exit. But a finding on a slide is easy to wave away — so let me show you the exit actually being used.'");
+  "One critical finding: search_database → send_email_report, data_exfiltration. Say: 'I didn't tell Ziran this was dangerous — that verdict is from its built-in patterns. I gave it a graph; it gave me the exit. But a finding on a slide is easy to wave away — so let me show you the exit actually being used.'");
 
 // 19 — section 4
-{ const s = p.addSlide(); section(s, "4", "From finding to breach — and back", "ZIRAN found the path. Now watch an attacker walk it — then watch us close it."); s.addNotes("Divider. 'ZIRAN found the path statically, before anyone attacked. Now let's walk it like an attacker — then close it.'"); }
+{ const s = p.addSlide(); section(s, "4", "From finding to breach — and back", "Ziran found the path. Now watch an attacker walk it — then watch us close it."); s.addNotes("Divider. 'Ziran found the path statically, before anyone attacked. Now let's walk it like an attacker — then close it.'"); }
 
 // 20 — exploit, live
 imageSlide("Theoretical? Watch it happen — live, offline", "exploit_vulnerable.png", 1287, 368,
@@ -268,7 +268,7 @@ imageSlide("Theoretical? Watch it happen — live, offline", "exploit_vulnerable
   contentHead(s, "Three vulnerabilities, one agent");
   const header = ["Vulnerability", "OWASP", "Where it lives", "Caught by"];
   const data = [
-    ["Tool-composition exfiltration", "structural", "search_database → send_email_report", "ZIRAN — static, pre-attack"],
+    ["Tool-composition exfiltration", "structural", "search_database → send_email_report", "Ziran — static, pre-attack"],
     ["Indirect prompt injection", "LLM01", "fetched content from fetch_reference, obeyed as an instruction", "runtime policy"],
     ["Excessive agency / confused deputy", "LLM06 / 08", "send_email_report trusts a model-chosen recipient", "runtime policy"],
   ];
@@ -281,23 +281,19 @@ imageSlide("Theoretical? Watch it happen — live, offline", "exploit_vulnerable
   ];
   s.addTable(rows, { x: 0.7, y: 1.65, w: 11.93, colW: [3.7, 1.4, 4.5, 2.33], rowH: [0.5, 0.95, 0.95, 0.95], border: { type: "solid", color: "E2E8F0", pt: 1 }, fontFace: BODY });
   s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 5.5, w: 11.93, h: 1.4, fill: { color: REDL }, line: { color: RED, width: 1 }, rectRadius: 0.1 });
-  s.addText("The composition is the precondition — ZIRAN finds it before anyone is attacked. The injection is the trigger; the model-chosen recipient is the missing control. All three live on four review-passing tools.",
+  s.addText("The composition is the precondition — Ziran finds it before anyone is attacked. The injection is the trigger; the model-chosen recipient is the missing control. All three live on four review-passing tools.",
     { x: 1.05, y: 5.5, w: 11.2, h: 1.4, valign: "middle", fontFace: HEAD, fontSize: 17, color: "7F1D1D", bold: true, lineSpacingMultiple: 1.1 });
-  s.addNotes("Name what we just saw. One innocuous agent, three stacked classes: the composition (structural — ZIRAN finds it pre-attack), indirect prompt injection (LLM01 — the trigger), excessive agency / confused deputy (LLM06 — the missing control). None is a bug in a single tool.");
+  s.addNotes("Name what we just saw. One innocuous agent, three stacked classes: the composition (structural — Ziran finds it pre-attack), indirect prompt injection (LLM01 — the trigger), excessive agency / confused deputy (LLM06 — the missing control). None is a bug in a single tool.");
 }
 
-// 22 — credibility
-imageSlide("What's behind the scan", "credibility.png", 1100, 560, null,
-  "Quick credibility beat: 639 vectors, 11 categories, 100% OWASP LLM Top-10 — but the differentiator is composition reasoning. Don't dwell; 30 seconds. (Cut this slide first if running long.)");
-
-// 23 — hardened, live
+// 22 — hardened, live
 imageSlide("Break the graph: the same attack, blocked", "exploit_hardened.png", 1287, 343,
   "One injected security policy. Injection refused as data; model-chosen recipient denied; the analyst's summary still goes out. Same agent, same payload.",
   "*** LIVE DEMO — the fix ***\n" +
   "`python scripts/demo.py exploit` already printed both runs — scroll to the second.\n" +
   "Same agent, same payload, opposite outcome: the injected instruction is REFUSED as data (LLM01); the model-chosen recipient is DENIED by recipient-binding (LLM06); the trifecta gate stops a private+untrusted run reaching an external sink. Crucially the analyst's legitimate summary STILL goes out. Say: 'The fix didn't break the product. We broke the path, not the agent.'");
 
-// 24 — what actually breaks the path
+// 23 — what actually breaks the path
 {
   const s = p.addSlide();
   contentHead(s, "The fix isn't 'remove a tool'. Break the graph.");
@@ -319,7 +315,38 @@ imageSlide("Break the graph: the same attack, blocked", "exploit_hardened.png", 
   s.addNotes("The fix is NOT 'remove a tool' — each is justified. Break the graph: no-instructions-from-data (LLM01), recipient binding (LLM06), trifecta gate via taint (the composition), and re-scan in CI (ziran ci fails the build when a new tool completes a trifecta). Three are runtime guardrails; the last is the design-time one that matches the thesis. It's all real, tested code in quanta/security/.");
 }
 
-// 25 — close
+// 24 — multi-agent: the distributed trifecta
+imageSlide("What about multi-agent systems?", "multi-agent-trifecta.png", 1180, 740,
+  "Split into least-privileged agents and the trifecta reassembles across them — via messages and shared memory.",
+  "The natural question: doesn't splitting into specialised, least-privileged agents fix this? It's necessary but NOT sufficient. Walk the red path: a poisoned doc hits the Research agent (untrusted); the injected instruction rides the shared memory / message bus to the Analytics agent (reads PII), which hands off to the Comms agent (sends out). No single agent holds all three legs — the SYSTEM does. The graph didn't shrink; it got bigger and harder to see: nodes are now (agent, tool) pairs; edges are agent-to-agent messages, delegation, and shared memory. Ziran scans multi-agent topologies (router/RAG, supervisor) too.");
+
+// 25 — breaking the graph across agents
+{
+  const s = p.addSlide();
+  contentHead(s, "Breaking the graph — across agents");
+  const maItems = [
+    ["Constrain the topology", "Allowlist which agent may talk to which — not a full mesh. A private-reading agent should have no path to an external-sending one."],
+    ["Provenance / taint on the bus", "Carry taint across agent-to-agent messages; enforce at agent boundaries — the trifecta gate moves up to the orchestrator."],
+    ["Quarantine untrusted-facing agents", "The agent touching untrusted content emits only structured, constrained output — never free-form instructions to privileged agents (dual-LLM)."],
+    ["One gate at the closure point", "A human or deterministic check where a private + untrusted flow could reach an external sink."],
+    ["Re-scan the whole system graph", "A new sub-agent or inter-agent edge can complete a cross-agent trifecta — Ziran in CI fails that build."],
+  ];
+  let my = 1.5;
+  maItems.forEach(([h, d]) => {
+    s.addShape(p.ShapeType.roundRect, { x: 0.7, y: my, w: 11.93, h: 0.86, fill: { color: WHITE }, line: { color: "E2E8F0", width: 1 }, rectRadius: 0.1 });
+    s.addShape(p.ShapeType.ellipse, { x: 1.0, y: my + 0.2, w: 0.46, h: 0.46, fill: { color: GREEN } });
+    s.addText("✓", { x: 1.0, y: my + 0.2, w: 0.46, h: 0.46, align: "center", valign: "middle", color: WHITE, fontSize: 17, bold: true });
+    s.addText(h, { x: 1.7, y: my, w: 4.3, h: 0.86, valign: "middle", fontFace: HEAD, fontSize: 15.5, color: INK, bold: true });
+    s.addText(d, { x: 6.1, y: my, w: 6.3, h: 0.86, valign: "middle", fontFace: BODY, fontSize: 13.5, color: SLATE, lineSpacingMultiple: 1.03 });
+    my += 0.95;
+  });
+  s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 6.26, w: 11.93, h: 0.66, fill: { color: INDIGOL }, line: { color: INDIGO, width: 1 }, rectRadius: 0.1 });
+  s.addText("The same lesson, one level up: no single tool was dangerous — and no single agent is either. The risk lives in how they connect.",
+    { x: 0.9, y: 6.26, w: 11.5, h: 0.66, valign: "middle", align: "center", fontFace: HEAD, fontSize: 15, color: INDIGO, bold: true });
+  s.addNotes("This is the remediation, lifted to the system level. Constrain the topology (allowlist agent-to-agent edges — not a mesh). Carry taint/provenance across the message bus and enforce at boundaries — the trifecta gate moves up to the orchestrator. Quarantine the untrusted-facing agent (dual-LLM: structured output only, never instructions to privileged agents). One human/deterministic gate at the closure point. Re-scan the whole system graph in CI. Land the kicker: no single tool was dangerous, and no single agent is either — the risk lives in how they connect.");
+}
+
+// 26 — close
 {
   const s = p.addSlide();
   s.background = { color: INK };
@@ -328,14 +355,14 @@ imageSlide("Break the graph: the same attack, blocked", "exploit_hardened.png", 
   s.addNotes("Say: 'If you're building, reviewing, or signing off on agents: stop asking only whether each tool is safe. Ask what they're capable of together — and put that question in your pipeline, not in an attacker's hands.' Restate the thesis: the vulnerability lives in the graph, not in any node.");
 }
 
-// 26 — resources + disclaimer
+// 27 — resources + disclaimer
 {
   const s = p.addSlide();
   contentHead(s, "Try it yourself");
   s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 1.7, w: 5.85, h: 2.3, fill: { color: INDIGOL }, line: { color: INDIGO, width: 1 }, rectRadius: 0.1 });
   s.addText([{ text: "Quanta\n", options: { bold: true, color: INDIGO, fontSize: 20, fontFace: HEAD } }, { text: "github.com/taoq-ai/quanta\n\n", options: { color: SLATE, fontSize: 15, fontFace: "Courier New" } }, { text: "The demo agent — defensible architecture, one composition finding. Run python scripts/demo.py yourself.", options: { color: SLATE, fontSize: 15 } }], { x: 1.05, y: 1.95, w: 5.2, h: 1.8, valign: "top", fontFace: BODY, lineSpacingMultiple: 1.1 });
   s.addShape(p.ShapeType.roundRect, { x: 6.78, y: 1.7, w: 5.85, h: 2.3, fill: { color: "ECFDF5" }, line: { color: GREEN, width: 1 }, rectRadius: 0.1 });
-  s.addText([{ text: "ZIRAN\n", options: { bold: true, color: GREEN, fontSize: 20, fontFace: HEAD } }, { text: "github.com/taoq-ai/ziran\n\n", options: { color: SLATE, fontSize: 15, fontFace: "Courier New" } }, { text: "The finder — composition analysis for AI agents.", options: { color: SLATE, fontSize: 15 } }], { x: 7.13, y: 1.95, w: 5.2, h: 1.8, valign: "top", fontFace: BODY, lineSpacingMultiple: 1.1 });
+  s.addText([{ text: "Ziran\n", options: { bold: true, color: GREEN, fontSize: 20, fontFace: HEAD } }, { text: "github.com/taoq-ai/ziran\n\n", options: { color: SLATE, fontSize: 15, fontFace: "Courier New" } }, { text: "Open-source — the composition analysis used in this demo.", options: { color: SLATE, fontSize: 15 } }], { x: 7.13, y: 1.95, w: 5.2, h: 1.8, valign: "top", fontFace: BODY, lineSpacingMultiple: 1.1 });
   s.addShape(p.ShapeType.roundRect, { x: 0.7, y: 4.3, w: 11.93, h: 1.5, fill: { color: REDL }, line: { color: RED, width: 1.2 }, rectRadius: 0.1 });
   s.addText([{ text: "⚠  Education only.  ", options: { bold: true, color: RED } }, { text: "Quanta is deliberately composable and has a known, intentional vulnerability by design. Do not deploy it for real or connect it to real data.", options: { color: "7F1D1D" } }], { x: 1.05, y: 4.3, w: 11.2, h: 1.5, valign: "middle", fontFace: BODY, fontSize: 16, lineSpacingMultiple: 1.1 });
   s.addText("Thank you — questions?", { x: 0.7, y: 6.1, w: 11.9, h: 0.8, align: "center", fontFace: HEAD, fontSize: 24, color: INK, bold: true });
