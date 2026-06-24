@@ -25,6 +25,18 @@ def test_search_database_rejects_unknown_metric() -> None:
         ReadOnlyMetricsRepository().query("drop_table")
 
 
+def test_group_by_customer_alias_maps_to_customer_id() -> None:
+    # A real LLM says "customer"; the column is "customer_id". Without the alias
+    # this silently fell back to country-level data.
+    result = ReadOnlyMetricsRepository().query("orders", group_by="customer")
+    assert result.columns[0] == "customer_id"
+
+
+def test_group_by_unknown_falls_back_to_country() -> None:
+    result = ReadOnlyMetricsRepository().query("revenue", group_by="nonsense")
+    assert result.columns[0] == "country"
+
+
 def test_database_is_read_only(analytics_db) -> None:
     conn = sqlite3.connect(f"file:{analytics_db}?mode=ro", uri=True)
     with pytest.raises(sqlite3.OperationalError):

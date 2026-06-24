@@ -102,10 +102,10 @@ Ziran and installs it for you (`--no-install` falls back to the bundled report).
 | Mode | Command | Needs |
 |---|---|---|
 | **Offline stub** (default) | `python scripts/demo.py ask` | nothing — deterministic, no AWS |
-| **Online, local** | `python scripts/demo.py ask --online` | `pip install -e '.[agentcore]'` + AWS creds + Bedrock access (real Claude, **in-process, no deploy**) |
+| **Online, local** | `uv run --extra agentcore python scripts/demo.py ask --online` | AWS creds + Bedrock access (real Claude, **in-process, no deploy**) |
 | **Cloud (deployed)** | `python scripts/demo.py deploy` then `ask --cloud` | a deployed AgentCore runtime (see below) |
 
-`--online` runs the real Strands + Bedrock agent in your own process — the fastest way to see Quanta on a live model without deploying. The model id is region-aware (`quanta/config.py`): EU regions use the EU Claude cross-region profile, so set `export AWS_REGION=eu-west-1` for PostNL.
+`--online` runs the real Strands + Bedrock agent in your own process — the fastest way to see Quanta on a live model without deploying. `uv run --extra agentcore` ensures the extra is present even if a bare `uv run` pruned it. Authenticate first, e.g. `aws sso login --profile quanta` then `export AWS_PROFILE=quanta`. The model id is region-aware (`quanta/config.py`) — Claude Sonnet 4.5 via the `us.`/`eu.` cross-region profile; set `export AWS_REGION=eu-west-1` for the EU profile.
 
 ## Deploy for real (Amazon Bedrock AgentCore)
 

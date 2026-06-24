@@ -26,6 +26,15 @@ _METRICS: dict[str, str] = {
     "customers": "SELECT {group}, COUNT(DISTINCT customer_id) AS customers FROM invoices",
 }
 _GROUP_COLUMNS = {"country", "month", "product", "customer_id"}
+# Natural-language aliases an LLM is likely to pass (it says "customer", the
+# column is "customer_id"). Unmapped values still fall back to "country".
+_GROUP_ALIASES = {
+    "customer": "customer_id",
+    "customers": "customer_id",
+    "countries": "country",
+    "products": "product",
+    "months": "month",
+}
 
 
 class ReadOnlyMetricsRepository:
@@ -51,7 +60,9 @@ class ReadOnlyMetricsRepository:
     ) -> QueryResult:
         if metric not in _METRICS:
             raise ValueError(f"unknown metric {metric!r}; choose from {sorted(_METRICS)}")
-        group = group_by if group_by in _GROUP_COLUMNS else "country"
+        requested = (group_by or "country").strip().lower()
+        requested = _GROUP_ALIASES.get(requested, requested)
+        group = requested if requested in _GROUP_COLUMNS else "country"
         cap = min(limit or SETTINGS.max_rows_returned, SETTINGS.max_rows_returned)
         sql = _METRICS[metric].format(group=group) + f" GROUP BY {group} ORDER BY 2 DESC LIMIT ?"
         with self._connect() as conn:
