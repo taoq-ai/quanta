@@ -8,11 +8,11 @@ All Python, no shell. From the repo root:
 
     python scripts/demo.py ask             # 3 analytics questions (offline stub)
     python scripts/demo.py ask --cloud "revenue by country, top 5"   # deployed agent
-    python scripts/demo.py scan            # run ZIRAN + open the report (installs ZIRAN if missing)
+    python scripts/demo.py scan            # run Ziran + open the report (installs Ziran if missing)
     python scripts/demo.py exploit         # the breach, then the hardened fix
     python scripts/demo.py deploy          # agentcore configure + launch
 
-The offline parts (ask, exploit) need nothing installed. `scan` needs ZIRAN and
+The offline parts (ask, exploit) need nothing installed. `scan` needs Ziran and
 will install it for you (use --no-install to fall back to the frozen report).
 """
 
@@ -63,12 +63,17 @@ def _child_env() -> dict[str, str]:
     return env
 
 
-def _ziran_installed() -> bool:
-    try:
-        import ziran  # noqa: F401
-    except ModuleNotFoundError:
-        return False
-    return True
+def _ziran_available() -> bool:
+    # Probe in a FRESH interpreter, not this one: a `pip install` done earlier in
+    # this same run is on disk but invisible to the already-running process. A
+    # child of sys.executable reads site-packages fresh, so this is accurate
+    # before *and* after a runtime install.
+    return (
+        subprocess.run(
+            [sys.executable, "-c", "import ziran"], capture_output=True
+        ).returncode
+        == 0
+    )
 
 
 def _install_ziran() -> None:
@@ -79,7 +84,7 @@ def _install_ziran() -> None:
     else:
         args = [sys.executable, "-m", "pip", "install", "ziran[agentcore]"]
         _cmd("pip install 'ziran[agentcore]'")
-    print(_c("2", "   installing ZIRAN…"))
+    print(_c("2", "   installing Ziran…"))
     subprocess.run(args, check=False)
 
 
@@ -104,13 +109,13 @@ def do_ask(questions: list[str], cloud: bool) -> None:
 
 
 def do_scan(out: Path, no_install: bool) -> None:
-    _step("Now turn ZIRAN on it — find what the tools can do *together*")
-    if not _ziran_installed() and not no_install:
+    _step("Now turn Ziran on it — find what the tools can do *together*")
+    if not _ziran_available() and not no_install:
         _install_ziran()
 
     out.mkdir(parents=True, exist_ok=True)
     html: Path | None = None
-    if _ziran_installed():
+    if _ziran_available():
         script = ROOT / "scripts" / "scan_quanta.py"
         _cmd(f"python scripts/{script.name} --out {out}")
         env = _child_env()
@@ -119,7 +124,7 @@ def do_scan(out: Path, no_install: bool) -> None:
         reports = sorted(out.glob("*_report.html"), key=lambda p: p.stat().st_mtime, reverse=True)
         html = reports[0] if reports else None
     else:
-        print(_c("33", "   ZIRAN unavailable — opening the pre-generated report instead."))
+        print(_c("33", "   Ziran unavailable — opening the pre-generated report instead."))
         html = ROOT / "reports" / "quanta_scan_report.html"
 
     if html and html.exists():
@@ -185,9 +190,9 @@ def main() -> None:
     pa.add_argument("questions", nargs="*")
     pa.add_argument("--cloud", action="store_true", help="use the deployed AgentCore agent")
 
-    ps = sub.add_parser("scan", help="run ZIRAN and open the report")
+    ps = sub.add_parser("scan", help="run Ziran and open the report")
     ps.add_argument("--out", type=Path, default=ROOT / "reports")
-    ps.add_argument("--no-install", action="store_true", help="don't auto-install ZIRAN")
+    ps.add_argument("--no-install", action="store_true", help="don't auto-install Ziran")
 
     sub.add_parser("exploit", help="run the breach + hardened fix")
     sub.add_parser("deploy", help="deploy to Amazon Bedrock AgentCore")
