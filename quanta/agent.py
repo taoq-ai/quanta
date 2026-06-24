@@ -47,8 +47,10 @@ def _build_strands_agent() -> Any:
 
     from quanta.config import SETTINGS
 
-    # Wrap the plain callables as Strands tools (names preserved for ZIRAN).
-    strands_tools = [
+    # Wrap the plain callables as Strands tools (names preserved for Ziran).
+    # Annotated list[Any] because Agent's tools param is invariant and the
+    # decorated-tool type isn't assignable to it otherwise.
+    strands_tools: list[Any] = [
         tool(name=spec.id, description=spec.description)(TOOL_FUNCTIONS[spec.id])
         for spec in TOOL_CATALOG
     ]
