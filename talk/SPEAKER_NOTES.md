@@ -92,4 +92,23 @@ network. The frozen GIF/PNGs in `talk/assets/` are the ultimate safety net.
 - **Slide 20 climax:** narrate the **taint column going red** — `PRIVATE+UNTRUSTED` forming in one run, then the **full customer list (names + emails)** leaving to a mailbox **on the allowlisted domain**. That single moment is the payoff. Then: "No control was bypassed."
 - **Likely Q&A — "it says VULNERABLE but 0 vulnerabilities?"** That counter is *prompt-level* attack findings (the focused scan skips those phases). The real finding is the **critical composition** in the "Dangerous Tool Chains" section — that's what flips the verdict to VULNERABLE. The composition *is* the vulnerability.
 
+## Policy beat — how the fix is applied (slides 20 & 22)
+Both runs are the **same agent, tools, prompt, and injection** — the only change is one object passed into the agent loop: the **policy** (`exploit.py` → `HardenedPolicy() if hardened else PermissivePolicy()`). Say that out loud; it's the whole thesis.
+
+**How it's applied:** the policy is two checkpoints *inside* the loop, not an outside filter. Before the agent obeys any instruction it found in fetched content it calls `review_external_instruction(...)`; before any outbound send it calls `review_delivery(recipient, requester, taint)`. Permissive says *yes* to both (a normal agent). Hardened applies three rules:
+1. **No instructions from data** — `fetch_reference` content is data, never commands → kills indirect prompt injection (LLM01).
+2. **Recipient binding** — email only to the authenticated requester, never a model/injection-chosen address → kills confused deputy / excessive agency (LLM06).
+3. **Trifecta gate** — a run holding *both* private + untrusted data can't reach an external sink unattended → kills the composition itself.
+
+**Narrate the hardened table row by row:**
+- *step 1* `fetch_reference (untrusted)` → the taint tracker stamps it `UNTRUSTED`, and it sticks for the whole run.
+- *step 3* `(policy) ignored injected instruction` → **Rule 1 firing**: the hidden instruction came from data, so it's refused *as data*; the malicious customer-data query never runs.
+- point at the taint column: because that step was refused, the run **never picks up `PRIVATE`** — it stays `UNTRUSTED`, so the trifecta never forms (Rule 3 doesn't even need to fire).
+- *step 4* `delivered (dry-run)` → the agent still emails the analyst their summary; that passes **Rule 2** (recipient == requester).
+- `✓ BLOCKED` → injection neutralised, legitimate work still completed.
+
+**Contrast with the vulnerable run:** same two checkpoints, opposite answers — permissive says *yes* at step 3 → the agent reads the **customer table (names + emails)** → taint goes **`PRIVATE+UNTRUSTED`** (red) → ships it to the attacker mailbox.
+
+**Closing line:** "I didn't patch a tool or rewrite a prompt — I added a policy over the *composition*, and the same attack now does nothing. The vulnerability lived in the graph; so does the fix."
+
 **Timing guardrails:** if running long, trim slide 7 (two failure shapes) and keep the multi-agent pair (24–25) tight — slide 24 is the beat, slide 25 can be a quick read or held for Q&A. **Never cut the reveal (17–18) or the exploit (20, 22).** The multi-agent slides also double as a ready answer to "doesn't multi-agent solve this?"
